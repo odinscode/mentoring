@@ -1,0 +1,1 @@
+This is a repository for EPAM's mentoring program L1 -> L2
