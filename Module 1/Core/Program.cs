@@ -1,4 +1,4 @@
-﻿using System;
+﻿using GreetingsLibrary;
 
 namespace Core
 {
@@ -6,12 +6,7 @@ namespace Core
     {
         static void Main(string[] args)
         {
-            SayGrettings(args[0]);
-        }
-
-        static void SayGrettings(string personName)
-        {
-            System.Console.WriteLine($"Hello, {personName}!");
+            System.Console.WriteLine(GreetingService.GreetPerson(args[0]));
         }
     }
 }

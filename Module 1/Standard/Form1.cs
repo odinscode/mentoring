@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using GreetingsLibrary;
 
 namespace GreetingsSolution
 {
@@ -13,20 +14,7 @@ namespace GreetingsSolution
         private void GreetingButton_Click(object sender, EventArgs e)
         {
             var userName = this.EnterNameTextbox.Text;
-
-            if (isNameEntered(userName))
-            {
-                MessageBox.Show($"Hello, {userName}!");
-            }
-            else
-            {
-                MessageBox.Show($"Please enter your name!");
-            }
-        }
-
-        private static bool isNameEntered(string userName)
-        {
-            return !string.IsNullOrEmpty(userName);
+            MessageBox.Show(GreetingService.GreetPerson(userName));
         }
     }
 }
