@@ -6,7 +6,12 @@ namespace Core
     {
         static void Main(string[] args)
         {
-            System.Console.WriteLine(GreetingService.GreetPerson(args[0]));
+            var defaultUser = string.Empty;
+            if (args.Length != 0)
+            {
+                defaultUser = args[0];
+            }
+            System.Console.WriteLine(GreetingService.GreetPerson(defaultUser));
         }
     }
 }
