@@ -4,14 +4,14 @@ namespace GreetingsLibrary
 {
     public static class GreetingService
     {
-        private const string ANONYMOUS = "Anonymous";
+        private const string Anonymous = "Anonymous";
 
         public static string GreetPerson(string personName)
         {
             var user = personName;
             if (IsUserInputInvalid(personName))
             {
-                user = ANONYMOUS;
+                user = Anonymous;
             }
             return $"{GetFormattedCurrentTime()} Hello, {user}!";
         }
@@ -23,7 +23,7 @@ namespace GreetingsLibrary
 
         private static bool IsUserInputInvalid(string userInput)
         {
-            return string.IsNullOrEmpty(userInput) || string.IsNullOrWhiteSpace(userInput);
+            return string.IsNullOrWhiteSpace(userInput);
         }
     }
 }

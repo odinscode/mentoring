@@ -30,11 +30,11 @@
 		android:text="Greet Me!"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/editText1"
+		android:layout_below="@id/UserNameInput"
 		android:id="@+id/GreetButton"
 		android:layout_marginBottom="108.0dp"
 		android:layout_marginTop="0.0dp"
-		android:layout_alignLeft="@id/editText1"
+		android:layout_alignLeft="@id/UserNameInput"
 		android:layout_marginLeft="0.0dp" />
 	<TextView
 		android:layout_width="wrap_content"
