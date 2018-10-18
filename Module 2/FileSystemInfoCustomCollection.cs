@@ -11,7 +11,7 @@ namespace FileSystemVisitorApp
         {
             get
             {
-                if (index > 0 && index < _count)
+                if (IsIndexInRangeOfArray(index))
                     return files[index];
 
                 throw new System.ArgumentOutOfRangeException();
@@ -46,16 +46,38 @@ namespace FileSystemVisitorApp
             _count++;
         }
 
-        // TODO: add remove
+        public void Remove(T value)
+        {
+            var searchingIndex = -1;
+
+            for (int index = 0; index < Count; index++)
+            {
+                if (files[index] == value)
+                {
+                    searchingIndex = index;
+                    break;
+                }
+            }
+
+            RemoveAt(searchingIndex);
+        }
 
         public void RemoveAt(int index)
         {
+            if (!IsIndexInRangeOfArray(index))
+                return;
+
             for (int arrayIndex = 0; arrayIndex < files.Length - 1; arrayIndex++)
             {
                 files[arrayIndex] = files[arrayIndex + 1];
             }
             files[files.Length] = null;
             _count--;
+        }
+
+        private bool IsIndexInRangeOfArray(int index)
+        {
+            return index > 0 && index < _count;
         }
 
         private bool IsArrayFilled()
