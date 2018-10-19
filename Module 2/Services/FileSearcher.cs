@@ -12,9 +12,10 @@ namespace FileSystemVisitorApp.Services
             this.DirectoryPath = directoryPath;
         }
 
+        // Todo: rework method
         public IEnumerable<string> GetAllFilesRecursively(string directoryPath)
         {
-            var directoryInfo = new DirectoryInfo(this.DirectoryPath);
+            var directoryInfo = new DirectoryInfo(directoryPath);
             var directories = directoryInfo.GetDirectories();
             var files = directoryInfo.GetFiles();
         }

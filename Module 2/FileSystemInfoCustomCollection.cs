@@ -14,7 +14,7 @@ namespace FileSystemVisitorApp
                 if (IsIndexInRangeOfArray(index))
                     return files[index];
 
-                throw new System.ArgumentOutOfRangeException();
+                throw new System.ArgumentOutOfRangeException(index.ToString(), "Index is out of bounds");
             }
         }
 
@@ -65,19 +65,18 @@ namespace FileSystemVisitorApp
         public void RemoveAt(int index)
         {
             if (!IsIndexInRangeOfArray(index))
-                return;
+                throw new System.ArgumentOutOfRangeException(index.ToString(), "Index is out of bounds");
 
-            for (int arrayIndex = 0; arrayIndex < files.Length - 1; arrayIndex++)
+            for (int arrayIndex = index; arrayIndex < _count - 1; arrayIndex++)
             {
                 files[arrayIndex] = files[arrayIndex + 1];
             }
-            files[files.Length] = null;
             _count--;
         }
 
         private bool IsIndexInRangeOfArray(int index)
         {
-            return index > 0 && index < _count;
+            return index >= 0 && index < _count;
         }
 
         private bool IsArrayFilled()
