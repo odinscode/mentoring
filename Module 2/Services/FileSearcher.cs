@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 
 namespace FileSystemVisitorApp.Services
 {
@@ -13,11 +12,30 @@ namespace FileSystemVisitorApp.Services
         }
 
         // Todo: rework method
-        public IEnumerable<string> GetAllFilesRecursively(string directoryPath)
+        public FileSystemInfoCustomCollection<FileSystemInfo> GetAllFilesRecursively(string directoryPath)
         {
             var directoryInfo = new DirectoryInfo(directoryPath);
-            var directories = directoryInfo.GetDirectories();
+            var directoryCollection = new FileSystemInfoCustomCollection<FileSystemInfo>();
+            directoryCollection.Add(directoryInfo);
             var files = directoryInfo.GetFiles();
+
+            foreach (var file in files)
+            {
+                directoryCollection.Add(file);
+            }
+
+            var directories = directoryInfo.GetDirectories();
+
+            foreach (var directory in directories)
+            {
+                var result = GetAllFilesRecursively(directory.FullName);
+                foreach (var item in result)
+                {
+                    directoryCollection.Add(item);
+                }
+            }
+
+            return directoryCollection;
         }
     }
 }

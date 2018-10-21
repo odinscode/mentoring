@@ -48,7 +48,7 @@ namespace FileSystemVisitorApp
 
         public void Remove(T value)
         {
-            var searchingIndex = -1;
+            int searchingIndex = -1;
 
             for (int index = 0; index < Count; index++)
             {

@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System.IO;
 
 namespace FileSystemVisitorApp.Services
 {
     public interface IFileSearcher
     {
-        IEnumerable<string> GetAllFilesRecursively(string directoryPath);
+        FileSystemInfoCustomCollection<FileSystemInfo> GetAllFilesRecursively(string directoryPath);
     }
 }
