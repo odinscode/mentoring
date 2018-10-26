@@ -44,10 +44,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FileSystemInfoCustomCollection.cs" />
+    <Compile Include="FilterMask.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\FileSearcher.cs" />
     <Compile Include="Services\IFileSearcher.cs" />
+    <Compile Include="Services\ItemFoundArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

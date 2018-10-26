@@ -74,6 +74,24 @@ namespace FileSystemVisitorApp
             _count--;
         }
 
+        public void Sort()
+        {
+            for (int i = 0; i < _count - 1; i++)
+            {
+                for (int j = 0; j < _count - i; j++)
+                {
+                    int result = string.Compare(files[j].FullName, files[j + 1].FullName);
+                    if (result > 0)
+                    {
+                        var temp = files[j + 1];
+                        files[j + 1] = files[j];
+                        files[j] = temp;
+                        break;
+                    }
+                }
+            }
+        }
+
         private bool IsIndexInRangeOfArray(int index)
         {
             return index >= 0 && index < _count;

@@ -4,6 +4,6 @@ namespace FileSystemVisitorApp.Services
 {
     public interface IFileSearcher
     {
-        FileSystemInfoCustomCollection<FileSystemInfo> GetAllFilesRecursively(string directoryPath);
+        FileSystemInfoCustomCollection<FileSystemInfo> GetAllFilesRecursively(FilterMask filterMask);
     }
 }
