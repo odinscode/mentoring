@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FileSystemVisitorApp.Models;
+using System;
 using System.IO;
 
 namespace FileSystemVisitorApp.Services
@@ -18,7 +19,7 @@ namespace FileSystemVisitorApp.Services
 
         #endregion
 
-        private Func<FileSystemInfo, bool> FileFilterDelegate;
+        private Func<CustomFileItem, bool> FileFilterDelegate;
         public delegate void ItemFoundHandler(FileSearcher sender, ItemFoundArgs e);
 
         public string DirectoryPath { get; set; }
@@ -28,7 +29,7 @@ namespace FileSystemVisitorApp.Services
 
         }
 
-        public FileSearcher(string directoryPath, Func<FileSystemInfo, bool> func)
+        public FileSearcher(string directoryPath, Func<CustomFileItem, bool> func)
         {
             DirectoryPath = directoryPath;
             FileFilterDelegate = func;
@@ -36,11 +37,13 @@ namespace FileSystemVisitorApp.Services
 
         private bool isFirstFilteredFileFound = false;
 
-        private FileSystemInfoCustomCollection<FileSystemInfo> GetAllFilesRecursively(string directoryPath, FilterMask filterMask)
+        private FileSystemInfoCustomCollection<CustomFileItem> GetItemsRecursively(string directoryPath, FilterMask filterMask)
         {
-            var directoryInfo = new DirectoryInfo(directoryPath);
-            var output = new FileSystemInfoCustomCollection<FileSystemInfo>();
-            if (isFirstFilteredFileFound)
+            var directoryInfo = new CustomDirectoryInfo(directoryPath);
+
+            var output = new FileSystemInfoCustomCollection<CustomFileItem>();
+
+            if (isFirstFilteredFileFound && filterMask.HasFlag(FilterMask.FirstOnly))
                 return output;
 
             if (!filterMask.HasFlag(FilterMask.NoFolders))
@@ -51,7 +54,7 @@ namespace FileSystemVisitorApp.Services
                     FilteredDirectoryFound?.Invoke(this, new ItemFoundArgs { Item = directoryInfo });
                     output.Add(directoryInfo);
                     isFirstFilteredFileFound = true;
-                    if (isFirstFilteredFileFound)
+                    if (isFirstFilteredFileFound && filterMask.HasFlag(FilterMask.FirstOnly))
                         return output;
                 }
             }
@@ -66,7 +69,7 @@ namespace FileSystemVisitorApp.Services
                     FilteredFileFound?.Invoke(this, new ItemFoundArgs { Item = file });
                     output.Add(file);
                     isFirstFilteredFileFound = true;
-                    if (isFirstFilteredFileFound)
+                    if (isFirstFilteredFileFound && filterMask.HasFlag(FilterMask.FirstOnly))
                         return output;
                 }
             }
@@ -75,7 +78,7 @@ namespace FileSystemVisitorApp.Services
 
             foreach (var directory in directories)
             {
-                var result = GetAllFilesRecursively(directory.FullName, filterMask);
+                var result = GetItemsRecursively(directory.FullName, filterMask);
                 foreach (var item in result)
                 {
                     output.Add(item);
@@ -85,14 +88,17 @@ namespace FileSystemVisitorApp.Services
             return output;
         }
 
-        public FileSystemInfoCustomCollection<FileSystemInfo> GetAllFilesRecursively(FilterMask filterMask)
+        public FileSystemInfoCustomCollection<CustomFileItem> GetItemsRecursively(FilterMask filterMask)
         {
             isFirstFilteredFileFound = false;
+
             SearchStarted?.Invoke(this, new EventArgs());
-            var output = GetAllFilesRecursively(DirectoryPath, filterMask);
+            var output = GetItemsRecursively(DirectoryPath, filterMask);
             SearchFinished?.Invoke(this, new EventArgs());
+
             if (filterMask.HasFlag(FilterMask.SortByName))
                 output.Sort();
+
             return output;
         }
     }

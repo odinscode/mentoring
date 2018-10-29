@@ -2,8 +2,18 @@
 
 namespace FileSystemVisitorApp.Models
 {
-    public class DirectoryItem : Item
+    public class DirectoryItem : CustomFileItem
     {
-        public IEnumerable<Item> Children { get; set; }
+        public IEnumerable<DirectoryItem> Subdirectories { get; private set; }
+
+        public IEnumerable<CustomFileInfo> Files { get; private set; }
+
+        public DirectoryItem(string directoryPath)
+        {
+            FullName = directoryPath;
+            Name = System.IO.Path.GetDirectoryName(directoryPath);
+            Subdirectories = new List<DirectoryItem>();
+            Files = new List<CustomFileInfo>();
+        }
     }
 }

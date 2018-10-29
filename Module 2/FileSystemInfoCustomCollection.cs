@@ -1,11 +1,11 @@
-﻿using System.Collections;
+﻿using FileSystemVisitorApp.Models;
+using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 
 namespace FileSystemVisitorApp
 {
     public class FileSystemInfoCustomCollection<T> : IEnumerable<T>
-            where T : FileSystemInfo
+            where T : CustomFileItem
     {
         public T this[int index]
         {
@@ -78,15 +78,14 @@ namespace FileSystemVisitorApp
         {
             for (int i = 0; i < _count - 1; i++)
             {
-                for (int j = 0; j < _count - i; j++)
+                for (int j = i + 1; j < _count; j++)
                 {
-                    int result = string.Compare(files[j].FullName, files[j + 1].FullName);
+                    int result = string.Compare(files[i].Name, files[j].Name, ignoreCase: true);
                     if (result > 0)
                     {
-                        var temp = files[j + 1];
-                        files[j + 1] = files[j];
-                        files[j] = temp;
-                        break;
+                        var temp = files[j];
+                        files[j] = files[i];
+                        files[i] = temp;
                     }
                 }
             }

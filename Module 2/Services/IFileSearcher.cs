@@ -1,9 +1,9 @@
-﻿using System.IO;
+﻿using FileSystemVisitorApp.Models;
 
 namespace FileSystemVisitorApp.Services
 {
     public interface IFileSearcher
     {
-        FileSystemInfoCustomCollection<FileSystemInfo> GetAllFilesRecursively(FilterMask filterMask);
+        FileSystemInfoCustomCollection<CustomFileItem> GetItemsRecursively(FilterMask filterMask);
     }
 }

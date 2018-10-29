@@ -1,6 +1,6 @@
-﻿using FileSystemVisitorApp.Services;
+﻿using FileSystemVisitorApp.Models;
+using FileSystemVisitorApp.Services;
 using System;
-using System.IO;
 
 namespace FileSystemVisitorApp
 {
@@ -8,7 +8,7 @@ namespace FileSystemVisitorApp
     {
         private const string DefaultSearchPath = @"C:\Projects";
 
-        static bool FilterFunction(FileSystemInfo file)
+        static bool FilterFunction(CustomFileItem file)
         {
             return file.FullName.ToLower().EndsWith(".cs");
         }
@@ -16,18 +16,22 @@ namespace FileSystemVisitorApp
         static void Main(string[] args)
         {
             var fileSearcher = new FileSearcher(DefaultSearchPath, FilterFunction);
-            GetSubscribers(fileSearcher);
+            SetupSubscribers(fileSearcher);
 
             var options = GetMaskConfiguration();
-            var result = fileSearcher.GetAllFilesRecursively(options);
+            var result = fileSearcher.GetItemsRecursively(options);
+            foreach (var item in result)
+            {
+                Console.WriteLine(item.Name);
+            }
         }
 
         private static FilterMask GetMaskConfiguration()
         {
-            return FilterMask.None;
+            return /*FilterMask.FirstOnly | */FilterMask.IgnoreFilterFunction;
         }
 
-        private static void GetSubscribers(FileSearcher fileSearcher)
+        private static void SetupSubscribers(FileSearcher fileSearcher)
         {
             fileSearcher.SearchStarted += Visitor_Start;
             fileSearcher.SearchFinished += Visitor_Finish;
@@ -41,7 +45,9 @@ namespace FileSystemVisitorApp
 
         private static void Visitor_FilteredDirectoryFound(FileSearcher sender, ItemFoundArgs e)
         {
+            Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine($"Filtered directory found: {e.Item.FullName}");
+            Console.ForegroundColor = ConsoleColor.Green;
         }
 
         private static void Visitor_FilteredFileFound(FileSearcher sender, ItemFoundArgs e)

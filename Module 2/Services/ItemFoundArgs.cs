@@ -1,10 +1,10 @@
-﻿using System;
-using System.IO;
+﻿using FileSystemVisitorApp.Models;
+using System;
 
 namespace FileSystemVisitorApp.Services
 {
     public class ItemFoundArgs : EventArgs
     {
-        public FileSystemInfo Item { get; set; }
+        public CustomFileItem Item { get; set; }
     }
 }
