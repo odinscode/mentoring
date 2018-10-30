@@ -15,7 +15,9 @@ namespace FileSystemVisitorApp
 
         static void Main(string[] args)
         {
-            var fileSearcher = new FileSearcher(DefaultSearchPath, FilterFunction);
+            var customDirectoryInfoFactory = new CustomDirectoryInfoFactory();
+
+            var fileSearcher = new FileSearcher(customDirectoryInfoFactory, DefaultSearchPath, FilterFunction);
             SetupSubscribers(fileSearcher);
 
             var options = GetMaskConfiguration();

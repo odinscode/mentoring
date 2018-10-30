@@ -9,17 +9,22 @@ namespace FileSystemVisitorApp.Models
         public CustomDirectoryInfo(string directoryPath)
         {
             FullName = directoryPath;
-            Name = Path.GetDirectoryName(directoryPath);
+            Name = Path.GetFileName(directoryPath);
         }
 
-        public IEnumerable<CustomDirectoryInfo> GetDirectories()
+        public CustomDirectoryInfo CreateInstance(string directoryPath)
+        {
+            return new CustomDirectoryInfo(directoryPath);
+        }
+
+        public virtual IEnumerable<CustomDirectoryInfo> GetDirectories()
         {
             return new DirectoryInfo(FullName)
                 .GetDirectories()
                 .Select(x => new CustomDirectoryInfo(x.FullName));
         }
 
-        public IEnumerable<CustomFileInfo> GetFiles()
+        public virtual IEnumerable<CustomFileInfo> GetFiles()
         {
             return new DirectoryInfo(FullName)
                 .GetFiles()

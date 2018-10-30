@@ -66,8 +66,10 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\CustomDirectoryInfo.cs" />
+    <Compile Include="Services\CustomDirectoryInfoFactory.cs" />
     <Compile Include="Services\FileSearcher.cs" />
     <Compile Include="Models\ICustomDirectoryInfo.cs" />
+    <Compile Include="Services\ICustomDirectoryInfoFactory.cs" />
     <Compile Include="Services\IFileSearcher.cs" />
     <Compile Include="Services\ItemFoundArgs.cs" />
   </ItemGroup>

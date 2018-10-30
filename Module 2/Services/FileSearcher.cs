@@ -1,6 +1,5 @@
 ﻿using FileSystemVisitorApp.Models;
 using System;
-using System.IO;
 
 namespace FileSystemVisitorApp.Services
 {
@@ -19,18 +18,22 @@ namespace FileSystemVisitorApp.Services
 
         #endregion
 
+        private readonly ICustomDirectoryInfoFactory customDirectoryInfoFactory;
+
         private Func<CustomFileItem, bool> FileFilterDelegate;
         public delegate void ItemFoundHandler(FileSearcher sender, ItemFoundArgs e);
 
         public string DirectoryPath { get; set; }
 
-        public FileSearcher(string directoryPath) : this(directoryPath, (file) => { return true; })
+        public FileSearcher(ICustomDirectoryInfoFactory customDirectoryInfoFactory, string directoryPath) 
+            : this(customDirectoryInfoFactory, directoryPath, (file) => { return true; })
         {
 
         }
 
-        public FileSearcher(string directoryPath, Func<CustomFileItem, bool> func)
+        public FileSearcher(ICustomDirectoryInfoFactory customDirectoryInfoFactory, string directoryPath, Func<CustomFileItem, bool> func)
         {
+            this.customDirectoryInfoFactory = customDirectoryInfoFactory;
             DirectoryPath = directoryPath;
             FileFilterDelegate = func;
         }
@@ -39,7 +42,7 @@ namespace FileSystemVisitorApp.Services
 
         private FileSystemInfoCustomCollection<CustomFileItem> GetItemsRecursively(string directoryPath, FilterMask filterMask)
         {
-            var directoryInfo = new CustomDirectoryInfo(directoryPath);
+            var directoryInfo = (CustomDirectoryInfo)customDirectoryInfoFactory.CreateInstance(directoryPath);
 
             var output = new FileSystemInfoCustomCollection<CustomFileItem>();
 
