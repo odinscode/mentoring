@@ -2,8 +2,8 @@
 using FileSystemVisitorApp.Models;
 using FileSystemVisitorApp.Services;
 using Moq;
-using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Xunit;
 
@@ -50,6 +50,126 @@ namespace FileSystemVisitorAppTests.Services
             // TODO: do not use reflection
             var filesCount = result.Where(x => x.GetType().Name == "CustomFileInfoProxy").Count();
             var directoriesCount = result.Where(x => x.GetType().Name == "CustomDirectoryInfoProxy").Count();
+
+            Assert.Equal(2, filesCount);
+            Assert.Equal(2, directoriesCount);
+        }
+
+        [Fact]
+        public void GetItemsRecursively_WhenMaskNoFolders_ShouldReturnOnlyFiles()
+        {
+            // Arrange
+            var filesRootMock = GetMockedFiles(new string[] { FirstIterationFileName });
+            var filesSecondIterationMock = GetMockedFiles(new string[] { SecondIterationFileName });
+
+            var directoriesFirstIterationMock = new Mock<List<Mock<CustomDirectoryInfo>>>();
+            var directoriesSecondIterationMock = GetMockedDirectory(SecondIterationDirectoryPath, filesSecondIterationMock);
+            directoriesFirstIterationMock.Object.Add(directoriesSecondIterationMock);
+
+            var directoryRootMock = GetMockedDirectory(RootDirectoryPath, filesRootMock, directoriesFirstIterationMock);
+
+            var factoryInstances = new Dictionary<string, Mock<CustomDirectoryInfo>>();
+            factoryInstances.Add(RootDirectoryPath, directoryRootMock);
+            factoryInstances.Add(SecondIterationDirectoryPath, directoriesSecondIterationMock);
+
+            var factoryMock = GetMockedFactories(factoryInstances);
+
+            var fileSearcher = new FileSearcher(factoryMock.Object, RootDirectoryPath);
+            var filterMask = FilterMask.NoFolders;
+
+            // Act
+            var result = fileSearcher.GetItemsRecursively(filterMask);
+
+            // Assert
+            // TODO: do not use reflection
+            var filesCount = result.Where(x => x.GetType().Name == "CustomFileInfoProxy").Count();
+            var directoriesCount = result.Where(x => x.GetType().Name == "CustomDirectoryInfoProxy").Count();
+
+            Assert.Equal(2, filesCount);
+            Assert.Equal(0, directoriesCount);
+        }
+
+        [Fact]
+        public void GetItemsRecursively_WhenMaskFirstOnly_ShouldReturnFirstItem()
+        {
+            // Arrange
+            var filesRootMock = GetMockedFiles(new string[] { FirstIterationFileName });
+            var filesSecondIterationMock = GetMockedFiles(new string[] { SecondIterationFileName });
+
+            var directoriesFirstIterationMock = new Mock<List<Mock<CustomDirectoryInfo>>>();
+            var directoriesSecondIterationMock = GetMockedDirectory(SecondIterationDirectoryPath, filesSecondIterationMock);
+            directoriesFirstIterationMock.Object.Add(directoriesSecondIterationMock);
+
+            var directoryRootMock = GetMockedDirectory(RootDirectoryPath, filesRootMock, directoriesFirstIterationMock);
+
+            var factoryInstances = new Dictionary<string, Mock<CustomDirectoryInfo>>();
+            factoryInstances.Add(RootDirectoryPath, directoryRootMock);
+            factoryInstances.Add(SecondIterationDirectoryPath, directoriesSecondIterationMock);
+
+            var factoryMock = GetMockedFactories(factoryInstances);
+
+            var fileSearcher = new FileSearcher(factoryMock.Object, RootDirectoryPath);
+            var filterMask = FilterMask.FirstOnly;
+
+            // Act
+            var result = fileSearcher.GetItemsRecursively(filterMask);
+
+            // Assert
+            // TODO: do not use reflection
+            var filesCount = result.Where(x => x.GetType().Name == "CustomFileInfoProxy").Count();
+            var directoriesCount = result.Where(x => x.GetType().Name == "CustomDirectoryInfoProxy").Count();
+
+            Assert.Equal(0, filesCount);
+            Assert.Equal(1, directoriesCount);
+            Assert.Equal(Path.GetFileName(RootDirectoryPath), result.FirstOrDefault().Name);
+        }
+
+        [Fact]
+        public void GetItemsRecursively_WhenMaskSortByName_ShouldReturnSortedItems()
+        {
+            // Arrange
+            var customDirectory = new string[]
+            {
+                SecondIterationDirectoryPath,   // X:\Temp\Directory1
+                RootDirectoryPath,              // X:\Temp
+                FirstIterationFileName,         // X:\Temp\Test1.txt
+                SecondIterationFileName         // X:\Temp\Directory1\Test2.txt
+            };
+
+            var expectedResult = customDirectory.Select(x => Path.GetFileName(x)).ToArray();
+
+            var filesRootMock = GetMockedFiles(new string[] { FirstIterationFileName });
+            var filesSecondIterationMock = GetMockedFiles(new string[] { SecondIterationFileName });
+
+            var directoriesFirstIterationMock = new Mock<List<Mock<CustomDirectoryInfo>>>();
+            var directoriesSecondIterationMock = GetMockedDirectory(SecondIterationDirectoryPath, filesSecondIterationMock);
+            directoriesFirstIterationMock.Object.Add(directoriesSecondIterationMock);
+
+            var directoryRootMock = GetMockedDirectory(RootDirectoryPath, filesRootMock, directoriesFirstIterationMock);
+
+            var factoryInstances = new Dictionary<string, Mock<CustomDirectoryInfo>>();
+            factoryInstances.Add(RootDirectoryPath, directoryRootMock);
+            factoryInstances.Add(SecondIterationDirectoryPath, directoriesSecondIterationMock);
+
+            var factoryMock = GetMockedFactories(factoryInstances);
+
+            var fileSearcher = new FileSearcher(factoryMock.Object, RootDirectoryPath);
+            var filterMask = FilterMask.SortByName;
+
+            // Act
+            var result = fileSearcher.GetItemsRecursively(filterMask);
+
+            // Assert
+            // TODO: do not use reflection
+            var filesCount = result.Where(x => x.GetType().Name == "CustomFileInfoProxy").Count();
+            var directoriesCount = result.Where(x => x.GetType().Name == "CustomDirectoryInfoProxy").Count();
+
+            var itemsSortedNames = result.Select(i => i.Name).ToArray();
+
+            for (int i = 0; i < itemsSortedNames.Count(); i++)
+            {
+                Assert.Equal(expectedResult[i], itemsSortedNames[i]);
+            }
 
             Assert.Equal(2, filesCount);
             Assert.Equal(2, directoriesCount);
