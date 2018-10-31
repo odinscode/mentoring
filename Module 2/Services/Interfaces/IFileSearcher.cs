@@ -1,6 +1,6 @@
 ﻿using FileSystemVisitorApp.Models;
 
-namespace FileSystemVisitorApp.Services
+namespace FileSystemVisitorApp.Services.Interfaces
 {
     public interface IFileSearcher
     {

@@ -1,6 +1,7 @@
 ﻿using FileSystemVisitorApp;
 using FileSystemVisitorApp.Models;
 using FileSystemVisitorApp.Services;
+using FileSystemVisitorApp.Services.Interfaces;
 using Moq;
 using System.Collections.Generic;
 using System.IO;
@@ -11,45 +12,24 @@ namespace FileSystemVisitorAppTests.Services
 {
     public class FileSearcherTests
     {
-        private static readonly string RootDirectoryPath =
-            @"X:\Temp";
-        private static readonly string SecondIterationDirectoryPath =
-            string.Concat(RootDirectoryPath, @"\", "Directory1");
-
-        private static readonly string FirstIterationFileName =
-            string.Concat(RootDirectoryPath, @"\", "Test1.txt");
-        private static readonly string SecondIterationFileName =
-            string.Concat(SecondIterationDirectoryPath, @"\", "Test2.txt");
+        private static readonly string RootPath = @"X:\Temp";
+        private static readonly string SecondIterationPath = $@"{RootPath}\Directory1";
+        private static readonly string FirstIterationFileName = $@"{RootPath}\Test1.txt";
+        private static readonly string SecondIterationFileName = $@"{SecondIterationPath}\Test2.txt";
 
         [Fact]
         public void GetItemsRecursively_WhenMaskNone_ShouldReturnAllFilesAndDirectories()
         {
             // Arrange
-            var filesRootMock = GetMockedFiles(new string[] { FirstIterationFileName });
-            var filesSecondIterationMock = GetMockedFiles(new string[] { SecondIterationFileName });
-
-            var directoriesFirstIterationMock = new Mock<List<Mock<CustomDirectoryInfo>>>();
-            var directoriesSecondIterationMock = GetMockedDirectory(SecondIterationDirectoryPath, filesSecondIterationMock);
-            directoriesFirstIterationMock.Object.Add(directoriesSecondIterationMock);
-
-            var directoryRootMock = GetMockedDirectory(RootDirectoryPath, filesRootMock, directoriesFirstIterationMock);
-
-            var factoryInstances = new Dictionary<string, Mock<CustomDirectoryInfo>>();
-            factoryInstances.Add(RootDirectoryPath, directoryRootMock);
-            factoryInstances.Add(SecondIterationDirectoryPath, directoriesSecondIterationMock);
-
-            var factoryMock = GetMockedFactories(factoryInstances);
-
-            var fileSearcher = new FileSearcher(factoryMock.Object, RootDirectoryPath);
+            var fileSearcher = SetupFileSearcher();
             var filterMask = FilterMask.None;
 
             // Act
             var result = fileSearcher.GetItemsRecursively(filterMask);
 
             // Assert
-            // TODO: do not use reflection
-            var filesCount = result.Where(x => x.GetType().Name == "CustomFileInfoProxy").Count();
-            var directoriesCount = result.Where(x => x.GetType().Name == "CustomDirectoryInfoProxy").Count();
+            var filesCount = result.Where(x => x is CustomFileInfo).Count();
+            var directoriesCount = result.Where(x => x is CustomDirectoryInfo).Count();
 
             Assert.Equal(2, filesCount);
             Assert.Equal(2, directoriesCount);
@@ -59,31 +39,15 @@ namespace FileSystemVisitorAppTests.Services
         public void GetItemsRecursively_WhenMaskNoFolders_ShouldReturnOnlyFiles()
         {
             // Arrange
-            var filesRootMock = GetMockedFiles(new string[] { FirstIterationFileName });
-            var filesSecondIterationMock = GetMockedFiles(new string[] { SecondIterationFileName });
-
-            var directoriesFirstIterationMock = new Mock<List<Mock<CustomDirectoryInfo>>>();
-            var directoriesSecondIterationMock = GetMockedDirectory(SecondIterationDirectoryPath, filesSecondIterationMock);
-            directoriesFirstIterationMock.Object.Add(directoriesSecondIterationMock);
-
-            var directoryRootMock = GetMockedDirectory(RootDirectoryPath, filesRootMock, directoriesFirstIterationMock);
-
-            var factoryInstances = new Dictionary<string, Mock<CustomDirectoryInfo>>();
-            factoryInstances.Add(RootDirectoryPath, directoryRootMock);
-            factoryInstances.Add(SecondIterationDirectoryPath, directoriesSecondIterationMock);
-
-            var factoryMock = GetMockedFactories(factoryInstances);
-
-            var fileSearcher = new FileSearcher(factoryMock.Object, RootDirectoryPath);
+            var fileSearcher = SetupFileSearcher();
             var filterMask = FilterMask.NoFolders;
 
             // Act
             var result = fileSearcher.GetItemsRecursively(filterMask);
 
             // Assert
-            // TODO: do not use reflection
-            var filesCount = result.Where(x => x.GetType().Name == "CustomFileInfoProxy").Count();
-            var directoriesCount = result.Where(x => x.GetType().Name == "CustomDirectoryInfoProxy").Count();
+            var filesCount = result.Where(x => x is CustomFileInfo).Count();
+            var directoriesCount = result.Where(x => x is CustomDirectoryInfo).Count();
 
             Assert.Equal(2, filesCount);
             Assert.Equal(0, directoriesCount);
@@ -93,35 +57,19 @@ namespace FileSystemVisitorAppTests.Services
         public void GetItemsRecursively_WhenMaskFirstOnly_ShouldReturnFirstItem()
         {
             // Arrange
-            var filesRootMock = GetMockedFiles(new string[] { FirstIterationFileName });
-            var filesSecondIterationMock = GetMockedFiles(new string[] { SecondIterationFileName });
-
-            var directoriesFirstIterationMock = new Mock<List<Mock<CustomDirectoryInfo>>>();
-            var directoriesSecondIterationMock = GetMockedDirectory(SecondIterationDirectoryPath, filesSecondIterationMock);
-            directoriesFirstIterationMock.Object.Add(directoriesSecondIterationMock);
-
-            var directoryRootMock = GetMockedDirectory(RootDirectoryPath, filesRootMock, directoriesFirstIterationMock);
-
-            var factoryInstances = new Dictionary<string, Mock<CustomDirectoryInfo>>();
-            factoryInstances.Add(RootDirectoryPath, directoryRootMock);
-            factoryInstances.Add(SecondIterationDirectoryPath, directoriesSecondIterationMock);
-
-            var factoryMock = GetMockedFactories(factoryInstances);
-
-            var fileSearcher = new FileSearcher(factoryMock.Object, RootDirectoryPath);
+            var fileSearcher = SetupFileSearcher();
             var filterMask = FilterMask.FirstOnly;
 
             // Act
             var result = fileSearcher.GetItemsRecursively(filterMask);
 
             // Assert
-            // TODO: do not use reflection
-            var filesCount = result.Where(x => x.GetType().Name == "CustomFileInfoProxy").Count();
-            var directoriesCount = result.Where(x => x.GetType().Name == "CustomDirectoryInfoProxy").Count();
+            var filesCount = result.Where(x => x is CustomFileInfo).Count();
+            var directoriesCount = result.Where(x => x is CustomDirectoryInfo).Count();
 
             Assert.Equal(0, filesCount);
             Assert.Equal(1, directoriesCount);
-            Assert.Equal(Path.GetFileName(RootDirectoryPath), result.FirstOrDefault().Name);
+            Assert.Equal(Path.GetFileName(RootPath), result.FirstOrDefault().Name);
         }
 
         [Fact]
@@ -130,39 +78,23 @@ namespace FileSystemVisitorAppTests.Services
             // Arrange
             var customDirectory = new string[]
             {
-                SecondIterationDirectoryPath,   // X:\Temp\Directory1
-                RootDirectoryPath,              // X:\Temp
+                SecondIterationPath,            // X:\Temp\Directory1
+                RootPath,                       // X:\Temp
                 FirstIterationFileName,         // X:\Temp\Test1.txt
                 SecondIterationFileName         // X:\Temp\Directory1\Test2.txt
             };
 
             var expectedResult = customDirectory.Select(x => Path.GetFileName(x)).ToArray();
 
-            var filesRootMock = GetMockedFiles(new string[] { FirstIterationFileName });
-            var filesSecondIterationMock = GetMockedFiles(new string[] { SecondIterationFileName });
-
-            var directoriesFirstIterationMock = new Mock<List<Mock<CustomDirectoryInfo>>>();
-            var directoriesSecondIterationMock = GetMockedDirectory(SecondIterationDirectoryPath, filesSecondIterationMock);
-            directoriesFirstIterationMock.Object.Add(directoriesSecondIterationMock);
-
-            var directoryRootMock = GetMockedDirectory(RootDirectoryPath, filesRootMock, directoriesFirstIterationMock);
-
-            var factoryInstances = new Dictionary<string, Mock<CustomDirectoryInfo>>();
-            factoryInstances.Add(RootDirectoryPath, directoryRootMock);
-            factoryInstances.Add(SecondIterationDirectoryPath, directoriesSecondIterationMock);
-
-            var factoryMock = GetMockedFactories(factoryInstances);
-
-            var fileSearcher = new FileSearcher(factoryMock.Object, RootDirectoryPath);
+            var fileSearcher = SetupFileSearcher();
             var filterMask = FilterMask.SortByName;
 
             // Act
             var result = fileSearcher.GetItemsRecursively(filterMask);
 
             // Assert
-            // TODO: do not use reflection
-            var filesCount = result.Where(x => x.GetType().Name == "CustomFileInfoProxy").Count();
-            var directoriesCount = result.Where(x => x.GetType().Name == "CustomDirectoryInfoProxy").Count();
+            var filesCount = result.Where(x => x is CustomFileInfo).Count();
+            var directoriesCount = result.Where(x => x is CustomDirectoryInfo).Count();
 
             var itemsSortedNames = result.Select(i => i.Name).ToArray();
 
@@ -173,6 +105,28 @@ namespace FileSystemVisitorAppTests.Services
 
             Assert.Equal(2, filesCount);
             Assert.Equal(2, directoriesCount);
+        }
+
+        private FileSearcher SetupFileSearcher()
+        {
+            var filesRootMock = GetMockedFiles(new string[] { FirstIterationFileName });
+            var filesSecondIterationMock = GetMockedFiles(new string[] { SecondIterationFileName });
+
+            var directoriesFirstIterationMock = new Mock<List<Mock<CustomDirectoryInfo>>>();
+            var directoriesSecondIterationMock = GetMockedDirectory(SecondIterationPath, filesSecondIterationMock);
+            directoriesFirstIterationMock.Object.Add(directoriesSecondIterationMock);
+
+            var directoryRootMock = GetMockedDirectory(RootPath, filesRootMock, directoriesFirstIterationMock);
+
+            var factoryInstances = new Dictionary<string, Mock<CustomDirectoryInfo>>();
+            factoryInstances.Add(RootPath, directoryRootMock);
+            factoryInstances.Add(SecondIterationPath, directoriesSecondIterationMock);
+
+            var factoryMock = GetMockedFactories(factoryInstances);
+
+            var fileSearcher = new FileSearcher(factoryMock.Object, RootPath);
+
+            return fileSearcher;
         }
 
         private Mock<ICustomDirectoryInfoFactory> GetMockedFactories(Dictionary<string, Mock<CustomDirectoryInfo>> instances)

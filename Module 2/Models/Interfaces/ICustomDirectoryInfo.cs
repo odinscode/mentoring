@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace FileSystemVisitorApp.Models
+namespace FileSystemVisitorApp.Models.Interfaces
 {
     public interface ICustomDirectoryInfo
     {

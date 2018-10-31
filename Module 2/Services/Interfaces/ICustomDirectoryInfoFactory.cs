@@ -1,6 +1,7 @@
 ﻿using FileSystemVisitorApp.Models;
+using FileSystemVisitorApp.Models.Interfaces;
 
-namespace FileSystemVisitorApp.Services
+namespace FileSystemVisitorApp.Services.Interfaces
 {
     public interface ICustomDirectoryInfoFactory
     {
