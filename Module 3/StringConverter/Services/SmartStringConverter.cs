@@ -7,6 +7,10 @@ namespace StringConverter.Services
     {
         public const int FirstNumericValueInAscii = 48;
 
+        public const int MinusSignAsciiCode = 45;
+
+        private static bool IsNegative = false;
+
         public static int ConvertStringToInteger(string input)
         {
             byte[] inputAsciiBytes = Encoding.ASCII.GetBytes(input);
@@ -21,7 +25,10 @@ namespace StringConverter.Services
                     result[i] = currentNumberCode;
                 else
                 {
-                    throw new StringConverterException($"Input string contains at least one non-numeric symbol: {input[i]} at position {i}");
+                    if (IsMinusSign(inputAsciiBytes[i]) && i == 0)
+                        IsNegative = true;
+                    else
+                        throw new StringConverterException($"Input string contains at least one non-numeric symbol: {input[i]} at position {i}");
                 }
             }
 
@@ -38,7 +45,14 @@ namespace StringConverter.Services
                 }
             }
 
-            return output;
+            return IsNegative 
+                ? -1 * output 
+                : output;
+        }
+
+        private static bool IsMinusSign(int symbolCode)
+        {
+            return symbolCode == MinusSignAsciiCode;
         }
 
         public static int GetNumberCode(int symbolCode)
