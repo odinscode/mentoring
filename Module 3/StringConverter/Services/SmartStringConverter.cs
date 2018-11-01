@@ -1,38 +1,54 @@
 ﻿using StringConverter.Models;
-using System;
 using System.Text;
 
 namespace StringConverter.Services
 {
-    public class SmartStringConverter
+    public static class SmartStringConverter
     {
         public const int FirstNumericValueInAscii = 48;
 
-        public int ConvertStringToInteger(string input)
+        public static int ConvertStringToInteger(string input)
         {
             byte[] inputAsciiBytes = Encoding.ASCII.GetBytes(input);
 
-            byte[] result = new byte[inputAsciiBytes.Length];
+            int[] result = new int[inputAsciiBytes.Length];
 
             for (int i = 0; i < inputAsciiBytes.Length; i++)
             {
-                if (isNumber(inputAsciiBytes[i]))
-                    result[i] = inputAsciiBytes[i];
+                int currentNumberCode = GetNumberCode(inputAsciiBytes[i]);
+
+                if (IsNumber(currentNumberCode))
+                    result[i] = currentNumberCode;
                 else
                 {
-                    throw new StringConverterException($"Input string contains at least one non-numeric symbol: {input[i]}");
+                    throw new StringConverterException($"Input string contains at least one non-numeric symbol: {input[i]} at position {i}");
                 }
             }
 
-            int output = BitConverter.ToInt32(result, 0);
+            int output = 0;
+
+            foreach (var number in result)
+            {
+                if (number != 0)
+                {
+                    if (output == 0)
+                        output = number;
+                    else
+                        output = 10 * output + number;
+                }
+            }
 
             return output;
         }
 
-        public bool isNumber(int symbolCode)
+        public static int GetNumberCode(int symbolCode)
         {
-            var diff = symbolCode - FirstNumericValueInAscii;
-            return diff >= 0 && diff <= 9;
+            return symbolCode - FirstNumericValueInAscii;
+        }
+
+        public static bool IsNumber(int symbolCode)
+        {
+            return symbolCode >= 0 && symbolCode <= 9;
         }
     }
 }
