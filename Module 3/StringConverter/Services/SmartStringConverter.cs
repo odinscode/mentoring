@@ -28,7 +28,7 @@ namespace StringConverter.Services
                     if (IsMinusSign(inputAsciiBytes[i]) && i == 0)
                         IsNegative = true;
                     else
-                        throw new StringConverterException($"Input string contains at least one non-numeric symbol: {input[i]} at position {i}");
+                        throw new StringConverterException(input[i], i);
                 }
             }
 
