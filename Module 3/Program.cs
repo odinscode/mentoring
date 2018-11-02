@@ -15,11 +15,11 @@ namespace OutputFirstCharApp
                     char firstChar = result[0];
                     Console.WriteLine($"First char is {firstChar}");
                 }
-                catch (IndexOutOfRangeException e)
+                catch (IndexOutOfRangeException)
                 {
                     Console.WriteLine("You entered an empty string!");
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     Console.WriteLine("Something went definitely wrong!");
                 }

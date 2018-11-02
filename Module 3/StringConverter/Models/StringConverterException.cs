@@ -21,7 +21,7 @@ namespace StringConverter.Models
             : base($"Input string contains at least one non-numeric symbol: {nonNumericChar} at position {charPosition}")
         {
             NonNumericChar = nonNumericChar;
-            CharPosition = CharPosition;
+            CharPosition = charPosition;
         }
 
         [SecurityPermissionAttribute(SecurityAction.Demand, SerializationFormatter = true)]

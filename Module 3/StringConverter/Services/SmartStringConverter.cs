@@ -9,13 +9,13 @@ namespace StringConverter.Services
 
         public const int MinusSignAsciiCode = 45;
 
-        private static bool IsNegative = false;
-
         public static int ConvertStringToInteger(string input)
         {
             byte[] inputAsciiBytes = Encoding.ASCII.GetBytes(input);
 
             int[] result = new int[inputAsciiBytes.Length];
+
+            bool isNegative = false;
 
             for (int i = 0; i < inputAsciiBytes.Length; i++)
             {
@@ -26,7 +26,7 @@ namespace StringConverter.Services
                 else
                 {
                     if (IsMinusSign(inputAsciiBytes[i]) && i == 0)
-                        IsNegative = true;
+                        isNegative = true;
                     else
                         throw new StringConverterException(input[i], i);
                 }
@@ -34,7 +34,7 @@ namespace StringConverter.Services
 
             int output = 0;
 
-            foreach (var number in result)
+            foreach (int number in result)
             {
                 if (number != 0)
                 {
@@ -45,7 +45,7 @@ namespace StringConverter.Services
                 }
             }
 
-            return IsNegative 
+            return isNegative
                 ? -1 * output 
                 : output;
         }
@@ -55,12 +55,12 @@ namespace StringConverter.Services
             return symbolCode == MinusSignAsciiCode;
         }
 
-        public static int GetNumberCode(int symbolCode)
+        private static int GetNumberCode(int symbolCode)
         {
             return symbolCode - FirstNumericValueInAscii;
         }
 
-        public static bool IsNumber(int symbolCode)
+        private static bool IsNumber(int symbolCode)
         {
             return symbolCode >= 0 && symbolCode <= 9;
         }
