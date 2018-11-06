@@ -14,7 +14,8 @@ namespace SecondTask
                 {
                     Console.WriteLine("Enter string: ");
                     string input = Console.ReadLine();
-                    int result = SmartStringConverter.ConvertStringToInteger(input);
+                    string trimmedInput = input.Replace(" ", string.Empty);
+                    int result = SmartStringConverter.ConvertStringToInteger(trimmedInput);
                     Console.WriteLine($"Input string was successfully converted to integer {result}");
                 }
                 catch(StringConverterException ex)

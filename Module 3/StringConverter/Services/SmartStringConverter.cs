@@ -43,10 +43,14 @@ namespace StringConverter.Services
                     else
                         output = 10 * output + number;
                 }
+                else if (output != 0)
+                {
+                    output = 10 * output + number;
+                }
             }
 
             return isNegative
-                ? -1 * output 
+                ? -1 * output
                 : output;
         }
 
