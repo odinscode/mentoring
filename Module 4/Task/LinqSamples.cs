@@ -18,51 +18,86 @@ namespace SampleQueries
         {
             int totalTurnover = 0;
 
-            var customers = dataSource.Customers
-                .ToDictionary(
-                    k => k,
-                    v => v.Orders.Sum(o => o.Total))
-                .Where(f => f.Value > totalTurnover);
-
-            while (customers.Count() > 5)
-            {
-                Console.WriteLine($"Amount of customers whose Total turnover is greater than {totalTurnover} = {customers.Count()}");
-                foreach (var item in customers)
+            var customersWithTotalAmount = dataSource.Customers
+                .Select(c => new
                 {
-                    Console.WriteLine($"{item.Key.CustomerID} has total turnover equal to {item.Value}");
+                    Customer = c,
+                    TotalAmount = c.Orders.Sum(o => o.Total)
+                })
+                .Where(o => o.TotalAmount > totalTurnover);
+
+            while (customersWithTotalAmount.Count() > 5)
+            {
+                Console.WriteLine($"Amount of customers whose Total turnover is greater than {totalTurnover}: {customersWithTotalAmount.Count()}");
+                foreach (var item in customersWithTotalAmount)
+                {
+                    Console.WriteLine($"{item.Customer.CustomerID} has total turnover equal to {item.TotalAmount}");
                 }
                 totalTurnover += 4000;
                 Console.WriteLine();
             }
         }
 
-        [Category("Restriction Operators")]
-        [Title("Where - Task 2")]
+        [Category("Grouping operators")]
+        [Title("GroupBy - Task 2")]
         [Description("Customer's list of suppliers from same location")]
         public void Linq2()
         {
             var customers = dataSource.Customers
-                .Select(customer => new { customer, suppliers = dataSource.Suppliers.Where(supplier => supplier.Country == customer.Country && supplier.City == customer.City) });
+                .Select(c => new
+                {
+                    Customer = c,
+                    Suppliers = dataSource.Suppliers
+                        .Where(supplier => supplier.Country == c.Country && supplier.City == c.City)
+                });
 
+            Console.WriteLine("Where usage: ");
             foreach (var item in customers)
             {
-                Console.WriteLine($"Customer's ID is - {item.customer.CustomerID}, customer's country is - {item.customer.Country}, customer's city is {item.customer.City}");
-
-                if (item.suppliers.Count() > 0)
+                if (item.Suppliers.Count() > 0)
                 {
+                    Console.WriteLine($"Customer's ID is {item.Customer.CustomerID}, customer's country is {item.Customer.Country}, customer's city is {item.Customer.City}");
                     Console.WriteLine($"Supplier's name | Supplier's country | Supplier's city");
-
-                    foreach (var supplier in item.suppliers)
+                    foreach (var supplier in item.Suppliers)
                     {
                         Console.WriteLine($"{supplier.SupplierName} | {supplier.Country} | {supplier.City}");
                     }
-
+                    Console.WriteLine();
                 }
-                Console.WriteLine();
+            }
+
+            var suppliers = dataSource.Suppliers
+                .GroupBy(s => new
+                {
+                    s.City,
+                    s.Country
+                });
+
+            var customersExtended = dataSource.Customers
+                .Select(c => new
+                {
+                    Customer = c,
+                    Suppliers = suppliers
+                        .FirstOrDefault(s => s.Key.City == c.City && s.Key.Country == c.Country)
+                });
+
+            Console.WriteLine("GroupBy usage: ");
+            foreach (var item in customersExtended)
+            {
+                if (item.Suppliers != null)
+                {
+                    Console.WriteLine($"Customer's ID is {item.Customer.CustomerID}, customer's country is {item.Customer.Country}, customer's city is {item.Customer.City}");
+                    Console.WriteLine("Supplier's name | Supplier's country | Supplier's city");
+                    foreach (var supplier in item.Suppliers)
+                    {
+                        Console.WriteLine($"{supplier.SupplierName} | {supplier.Country} | {supplier.City}");
+                    }
+                    Console.WriteLine();
+                }
             }
         }
 
-        [Category("Heh")]
+        [Category("Quantifiers")]
         [Title("Any - Task 3")]
         [Description("Customers who had at least one order which cost was more than X")]
         public void Linq3()
@@ -70,31 +105,35 @@ namespace SampleQueries
             int cost = 5000;
 
             var result = dataSource.Customers
-                .Select(c => new { customer = c, order = c.Orders.FirstOrDefault(o => o.Total > cost) });
+                .Select(c => new
+                {
+                    Customer = c,
+                    Order = c.Orders.FirstOrDefault(o => o.Total > cost)
+                })
+                .Where(t => t.Order != null);
 
             foreach (var item in result)
             {
-                if (item.order != null)
-                {
-                    Console.WriteLine($"Customer's id: {item.customer.CustomerID}, first order with cost > {cost}: {item.order.OrderID}");
-                }
+                Console.WriteLine($"Customer's id: {item.Customer.CustomerID}, first order with cost > {cost}: {item.Order.OrderID}");
             }
         }
 
-        [Category("Heh")]
+        [Category("Quantifiers")]
         [Title("Any - Task 4")]
-        [Description("Customers who had at least one order which cost was more than X")]
+        [Description("Customers with first order date")]
         public void Linq4()
         {
             var result = dataSource.Customers
-                .Select(c => new { customer = c, firstOrderDate = c?.Orders?.Min(o => o.OrderDate) });
+                .Where(c => c.Orders.Any())
+                .Select(c => new
+                {
+                    Customer = c,
+                    FirstOrderDate = c.Orders.Min(o => o.OrderDate)
+                });
 
             foreach (var item in result)
             {
-                if (item.firstOrderDate != null)
-                {
-                    Console.WriteLine($"Customer's id: {item.customer.CustomerID}, first order date {item.firstOrderDate}");
-                }
+                Console.WriteLine($"Customer's id: {item.Customer.CustomerID}, first order date {item.FirstOrderDate}");
             }
         }
     }
