@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SampleSupport;
 using Task.Data;
@@ -38,7 +39,25 @@ namespace SampleQueries
             }
         }
 
-        [Category("Grouping operators")]
+        [Category("Restriction Operators")]
+        [Title("Where - Task 6")]
+        [Description("Customers with nondigital postal code or with empty region or with non-valid telephone number")]
+        public void Linq6()
+        {
+            var digitalCharList = new List<char> { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+
+            var result = dataSource.Customers
+                .Where(c => c.PostalCode?.ToList()?.Except(digitalCharList).Count() != 0
+                    || string.IsNullOrWhiteSpace(c.Region)
+                    || !c.Phone.StartsWith("("));
+
+            foreach (var item in result)
+            {
+                Console.WriteLine($"Company name: {item.CompanyName}, postal code: {item.PostalCode}, region: {item.Region}, phone: {item.Phone}");
+            }
+        }
+
+        [Category("Grouping Operators")]
         [Title("GroupBy - Task 2")]
         [Description("Customer's list of suppliers from same location")]
         public void Linq2()
@@ -97,6 +116,46 @@ namespace SampleQueries
             }
         }
 
+        [Category("Grouping Operators")]
+        [Title("GroupBy - Task 7")]
+        [Description("Products grouped by avaliability in stock and sorted by cost")]
+        public void Linq7()
+        {
+            var result = dataSource.Products
+                .GroupBy(p => p.Category)
+                .Select(g => new
+                {
+                    Category = g.Key,
+                    AvailableProducts = new
+                    {
+                        AvailabilityInStock = g
+                            .GroupBy(p => p.UnitsInStock != 0)
+                            .Select(a => new
+                            {
+                                isAvailable = a.Key,
+                                Products = a.OrderBy(_ => _.UnitPrice)
+                            }),
+                    }
+                });
+
+            foreach (var item in result)
+            {
+                string category = item.Category;
+                var productsGroup = item.AvailableProducts;
+                Console.WriteLine($"Category: {category}");
+
+                foreach (var group in productsGroup.AvailabilityInStock)
+                {
+                    Console.WriteLine(group.isAvailable ? "Available products in group" : "Non-Available products in group");
+                    foreach (var product in group.Products)
+                    {
+                        Console.WriteLine($"Product id: {product.ProductID}, Name: {product.ProductName}, Price: {product.UnitPrice}");
+                    }
+                }
+                Console.WriteLine();
+            }
+        }
+
         [Category("Quantifiers")]
         [Title("Any - Task 3")]
         [Description("Customers who had at least one order which cost was more than X")]
@@ -133,7 +192,30 @@ namespace SampleQueries
 
             foreach (var item in result)
             {
-                Console.WriteLine($"Customer's id: {item.Customer.CustomerID}, first order date {item.FirstOrderDate}");
+                Console.WriteLine($"Customer's id: {item.Customer.CustomerID}, first order date: {item.FirstOrderDate}");
+            }
+        }
+
+        [Category("Ordering Operators")]
+        [Title("OrderBy - Task 5")]
+        [Description("Customers with first order date but filtered by age, month, total turnover and client name")]
+        public void Linq5()
+        {
+            var result = dataSource.Customers
+                .Where(c => c.Orders.Any())
+                .Select(c => new
+                {
+                    Customer = c,
+                    FirstOrderDate = c.Orders.Min(o => o.OrderDate)
+                })
+                .OrderBy(r => r.FirstOrderDate.Year)
+                .ThenBy(r => r.FirstOrderDate.Month)
+                .ThenByDescending(r => r.Customer.Orders.Sum(o => o.Total))
+                .ThenBy(r => r.Customer.CompanyName);
+
+            foreach (var item in result)
+            {
+                Console.WriteLine($"Customer's name: {item.Customer.CompanyName}, first order date: {item.FirstOrderDate}");
             }
         }
     }
