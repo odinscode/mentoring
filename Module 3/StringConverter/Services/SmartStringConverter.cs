@@ -36,14 +36,7 @@ namespace StringConverter.Services
 
             foreach (int number in result)
             {
-                if (number != 0)
-                {
-                    if (output == 0)
-                        output = number;
-                    else
-                        output = 10 * output + number;
-                }
-                else if (output != 0)
+                if (number != 0 || output != 0)
                 {
                     output = 10 * output + number;
                 }
