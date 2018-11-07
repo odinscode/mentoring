@@ -32,7 +32,7 @@ namespace SampleQueries
                 Console.WriteLine($"Amount of customers whose Total turnover is greater than {totalTurnover}: {customersWithTotalAmount.Count()}");
                 foreach (var item in customersWithTotalAmount)
                 {
-                    Console.WriteLine($"{item.Customer.CustomerID} has total turnover equal to {item.TotalAmount}");
+                    Console.WriteLine($"{item.Customer.CompanyName} has total turnover equal to {item.TotalAmount}");
                 }
                 totalTurnover += 4000;
                 Console.WriteLine();
@@ -75,7 +75,7 @@ namespace SampleQueries
             {
                 if (item.Suppliers.Count() > 0)
                 {
-                    Console.WriteLine($"Customer's ID is {item.Customer.CustomerID}, customer's country is {item.Customer.Country}, customer's city is {item.Customer.City}");
+                    Console.WriteLine($"Customer's name is {item.Customer.CompanyName}, customer's country is {item.Customer.Country}, customer's city is {item.Customer.City}");
                     Console.WriteLine($"Supplier's name | Supplier's country | Supplier's city");
                     foreach (var supplier in item.Suppliers)
                     {
@@ -105,7 +105,7 @@ namespace SampleQueries
             {
                 if (item.Suppliers != null)
                 {
-                    Console.WriteLine($"Customer's ID is {item.Customer.CustomerID}, customer's country is {item.Customer.Country}, customer's city is {item.Customer.City}");
+                    Console.WriteLine($"Customer's name is {item.Customer.CompanyName}, customer's country is {item.Customer.Country}, customer's city is {item.Customer.City}");
                     Console.WriteLine("Supplier's name | Supplier's country | Supplier's city");
                     foreach (var supplier in item.Suppliers)
                     {
@@ -173,7 +173,7 @@ namespace SampleQueries
 
             foreach (var item in result)
             {
-                Console.WriteLine($"Customer's id: {item.Customer.CustomerID}, first order with cost > {cost}: {item.Order.OrderID}");
+                Console.WriteLine($"Customer's name: {item.Customer.CompanyName}, first order with cost > {cost}: {item.Order.OrderID}");
             }
         }
 
@@ -192,7 +192,7 @@ namespace SampleQueries
 
             foreach (var item in result)
             {
-                Console.WriteLine($"Customer's id: {item.Customer.CustomerID}, first order date: {item.FirstOrderDate}");
+                Console.WriteLine($"Customer's name: {item.Customer.CompanyName}, first order date: {item.FirstOrderDate}");
             }
         }
 
