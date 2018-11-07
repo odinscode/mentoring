@@ -156,6 +156,35 @@ namespace SampleQueries
             }
         }
 
+        [Category("Grouping Operators")]
+        [Title("GroupBy - Task 9")]
+        [Description("Average profit and average intensity for each city")]
+        public void Linq9()
+        {
+            var result = dataSource.Customers
+                .GroupBy(c => c.City)
+                .Select(g => new
+                {
+                    CityName = g.Key,
+                    CustomersCount = g.Count(),
+                    CustomerOrderAmount = g.Sum(c => c.Orders.Count()),
+                    SummaryProfit = g.Sum(c => c.Orders.Sum(o => o.Total)),
+                    AverageProfit = g.Sum(c => c.Orders.Sum(o => o.Total)) / g.Count(),
+                    Intensity = g.Sum(c => c.Orders.Count()) / g.Count()
+                });
+
+            foreach (var item in result)
+            {
+                Console.WriteLine($"City: {item.CityName}");
+                Console.WriteLine($"Amount of cusotmers: {item.CustomersCount}");
+                Console.WriteLine($"Customers amount of orders: {item.CustomerOrderAmount}");
+                Console.WriteLine($"Summary profit: {item.SummaryProfit}");
+                Console.WriteLine($"Average profit: {item.AverageProfit}");
+                Console.WriteLine($"Intensity: {item.Intensity}");
+                Console.WriteLine();
+            }
+        }
+
         [Category("Quantifiers")]
         [Title("Any - Task 3")]
         [Description("Customers who had at least one order which cost was more than X")]
