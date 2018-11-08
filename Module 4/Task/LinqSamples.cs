@@ -157,6 +157,39 @@ namespace SampleQueries
         }
 
         [Category("Grouping Operators")]
+        [Title("GroupBy - Task 8")]
+        [Description("Products grouped by expensive/average/cheap prices")]
+        public void Linq8()
+        {
+            var result = dataSource.Products
+                .OrderBy(p => p.UnitPrice)
+                .GroupBy(p => GetGroupName(p.UnitPrice));
+
+            foreach (var item in result)
+            {
+                Console.WriteLine(item.Key);
+                Console.WriteLine();
+                foreach (var temp in item)
+                {
+                    Console.WriteLine($"{temp.ProductName}, {temp.UnitPrice}");
+                }
+                Console.WriteLine();
+            }
+        }
+
+        private string GetGroupName(decimal productCost)
+        {
+            int expensiveProductCost = 80;
+            int cheapProductCost = 20;
+
+            return productCost <= cheapProductCost
+                ? "Cheap"
+                : (productCost > cheapProductCost && productCost < expensiveProductCost)
+                    ? "Average"
+                    : "Expensive";
+        }
+
+        [Category("Grouping Operators")]
         [Title("GroupBy - Task 9")]
         [Description("Average profit and average intensity for each city")]
         public void Linq9()
@@ -169,14 +202,14 @@ namespace SampleQueries
                     CustomersCount = g.Count(),
                     CustomerOrderAmount = g.Sum(c => c.Orders.Count()),
                     SummaryProfit = g.Sum(c => c.Orders.Sum(o => o.Total)),
-                    AverageProfit = g.Sum(c => c.Orders.Sum(o => o.Total)) / g.Count(),
-                    Intensity = g.Sum(c => c.Orders.Count()) / g.Count()
+                    AverageProfit = g.Average(c => c.Orders.Sum(o => o.Total)),
+                    Intensity = g.Average(c => c.Orders.Count())
                 });
 
             foreach (var item in result)
             {
                 Console.WriteLine($"City: {item.CityName}");
-                Console.WriteLine($"Amount of cusotmers: {item.CustomersCount}");
+                Console.WriteLine($"Amount of customers: {item.CustomersCount}");
                 Console.WriteLine($"Customers amount of orders: {item.CustomerOrderAmount}");
                 Console.WriteLine($"Summary profit: {item.SummaryProfit}");
                 Console.WriteLine($"Average profit: {item.AverageProfit}");
