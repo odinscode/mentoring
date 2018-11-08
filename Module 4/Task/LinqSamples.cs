@@ -218,6 +218,69 @@ namespace SampleQueries
             }
         }
 
+        [Category("Grouping Operators")]
+        [Title("GroupBy - Task 10")]
+        [Description("Average statistics (amount of purchases) for each customer per year, per month and per year and month")]
+        public void Linq10()
+        {
+            var result = dataSource.Customers.
+                Select(c => new
+                {
+                    Customer = c,
+                    PurchasesPerYear = c.Orders
+                        .GroupBy(o => o.OrderDate.ToString("yyyy"))
+                        .Select(g => new
+                        {
+                            Year = g.Key,
+                            OrdersAmount = g.Count()
+                        }),
+                    PurchasesPerMonth = c.Orders
+                        .GroupBy(o => o.OrderDate.ToString("MMMM"))
+                        .Select(g => new
+                        {
+                            Month = g.Key,
+                            OrdersAmount = g.Count()
+                        }),
+                    PurchasesPerYearAndMonth = c.Orders
+                        .GroupBy(o => o.OrderDate.ToString("yyyy MMMM"))
+                        .Select(g => new
+                        {
+                            YearAndMonth = g.Key,
+                            OrdersAmount = g.Count()
+                        })
+                });
+
+            foreach (var item in result)
+            {
+                Console.WriteLine($"Customer: {item.Customer.CompanyName}");
+
+                Console.WriteLine("Intesity per year");
+                foreach (var temp in item.PurchasesPerYear)
+                {
+                    Console.WriteLine($"For {temp.Year} customer made {temp.OrdersAmount} orders");
+                }
+
+                Console.WriteLine();
+
+                Console.WriteLine("Intesity per month");
+                foreach (var temp in item.PurchasesPerMonth)
+                {
+                    Console.WriteLine($"For {temp.Month} customer made {temp.OrdersAmount} orders");
+                }
+
+                Console.WriteLine();
+
+                Console.WriteLine("Intesity per year and PurchasesPerYearAndMonth");
+                foreach (var temp in item.PurchasesPerYearAndMonth)
+                {
+                    Console.WriteLine($"For {temp.YearAndMonth} customer made {temp.OrdersAmount} orders");
+                }
+
+                Console.WriteLine();
+                Console.WriteLine();
+            }
+        }
+
         [Category("Quantifiers")]
         [Title("Any - Task 3")]
         [Description("Customers who had at least one order which cost was more than X")]
