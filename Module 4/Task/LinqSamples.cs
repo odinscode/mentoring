@@ -223,8 +223,8 @@ namespace SampleQueries
         [Description("Average statistics (amount of purchases) for each customer per year, per month and per year and month")]
         public void Linq10()
         {
-            var result = dataSource.Customers.
-                Select(c => new
+            var result = dataSource.Customers
+                .Select(c => new
                 {
                     Customer = c,
                     PurchasesPerYear = c.Orders
@@ -254,26 +254,26 @@ namespace SampleQueries
             {
                 Console.WriteLine($"Customer: {item.Customer.CompanyName}");
 
-                Console.WriteLine("Intesity per year");
+                Console.WriteLine("Intensity per year");
                 foreach (var temp in item.PurchasesPerYear)
                 {
-                    Console.WriteLine($"For {temp.Year} customer made {temp.OrdersAmount} orders");
+                    Console.WriteLine($"During {temp.Year} the customer made {temp.OrdersAmount} orders");
                 }
 
                 Console.WriteLine();
 
-                Console.WriteLine("Intesity per month");
+                Console.WriteLine("Intensity per month");
                 foreach (var temp in item.PurchasesPerMonth)
                 {
-                    Console.WriteLine($"For {temp.Month} customer made {temp.OrdersAmount} orders");
+                    Console.WriteLine($"During {temp.Month} the customer made {temp.OrdersAmount} orders");
                 }
 
                 Console.WriteLine();
 
-                Console.WriteLine("Intesity per year and PurchasesPerYearAndMonth");
+                Console.WriteLine("Intensity per year and PurchasesPerYearAndMonth");
                 foreach (var temp in item.PurchasesPerYearAndMonth)
                 {
-                    Console.WriteLine($"For {temp.YearAndMonth} customer made {temp.OrdersAmount} orders");
+                    Console.WriteLine($"During {temp.YearAndMonth} the customer made {temp.OrdersAmount} orders");
                 }
 
                 Console.WriteLine();
