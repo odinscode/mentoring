@@ -5,14 +5,13 @@ using SystemWatcherSolution.Services.Validation;
 
 namespace SystemWatcherSolution.Services.Converting
 {
-    public class WatchedDirectoryElementConverter : IElementConverter<WatchedDirectoryElement, WatchedDirectory>
+    public class WatchedDirectoryConverter : IElementConverter<WatchedDirectoryElement, WatchedDirectory>
     {
         private readonly IElementValidation<WatchedDirectoryElement> validationService;
 
-        public WatchedDirectoryElementConverter(IElementValidation<WatchedDirectoryElement> validationService)
+        public WatchedDirectoryConverter(IElementValidation<WatchedDirectoryElement> validationService)
         {
-            this.validationService = validationService ??
-                throw new System.ArgumentNullException("IElementValidation", "IElementValidation wasn't specified");
+            this.validationService = validationService;
         }
 
         public WatchedDirectory Convert(WatchedDirectoryElement source)

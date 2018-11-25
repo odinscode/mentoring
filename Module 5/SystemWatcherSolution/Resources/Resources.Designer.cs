@@ -22,14 +22,14 @@ namespace SystemWatcherSolution.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Exceptions {
+    internal class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Exceptions() {
+        internal Resources() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace SystemWatcherSolution.Resources {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SystemWatcherSolution.Resources.Exceptions", typeof(Exceptions).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SystemWatcherSolution.Resources.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -63,27 +63,27 @@ namespace SystemWatcherSolution.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Directory {0} was not found.
         /// </summary>
-        internal static string DirtectoryNotFound {
+        internal static string DirectoryNotFoundException {
             get {
-                return ResourceManager.GetString("DirtectoryNotFound", resourceCulture);
+                return ResourceManager.GetString("DirectoryNotFoundException", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Regular expression is empty.
         /// </summary>
-        internal static string RegularExpressionIsEmpty {
+        internal static string RegularExpressionIsEmptyException {
             get {
-                return ResourceManager.GetString("RegularExpressionIsEmpty", resourceCulture);
+                return ResourceManager.GetString("RegularExpressionIsEmptyException", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Rule is not set.
         /// </summary>
-        internal static string RuleIsNotSet {
+        internal static string RuleIsNotSetException {
             get {
-                return ResourceManager.GetString("RuleIsNotSet", resourceCulture);
+                return ResourceManager.GetString("RuleIsNotSetException", resourceCulture);
             }
         }
     }

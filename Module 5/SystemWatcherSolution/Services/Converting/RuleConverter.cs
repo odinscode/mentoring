@@ -12,8 +12,7 @@ namespace SystemWatcherSolution.Services.Converting
 
         public RuleConverter(IElementValidation<RuleElement> validationService)
         {
-            this.validationService = validationService 
-                ?? throw new System.ArgumentNullException("IElementValidation", "IElementValidation wasn't specified");
+            this.validationService = validationService;
         }
 
         public Rule Convert(RuleElement source)

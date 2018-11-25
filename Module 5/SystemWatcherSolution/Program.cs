@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Configuration;
 using System.IO;
-using SystemWatcherSolution.Infrastructure;
+using System.Linq;
 using SystemWatcherSolution.Models.Configuration;
-using SystemWatcherSolution.Models.Entities;
 using SystemWatcherSolution.Services;
-using Unity;
+using SystemWatcherSolution.Services.Converting;
+using SystemWatcherSolution.Services.Validation;
 
 namespace SystemWatcherSolution
 {
@@ -13,61 +13,45 @@ namespace SystemWatcherSolution
     {
         static void Main(string[] args)
         {
-            RegisterDependencies.SetupContainer();
-            var container = RegisterDependencies.Container;
+            var ruleValidationService = new RuleValidation();
+            var watchedDirectoryValidationService = new WatchedDirectoryValidation();
 
-            try
-            {
-                var systemWatcherSection = (SystemWatcherConfigurationSection)
-                    ConfigurationManager.GetSection("systemWatcher");
+            var ruleConvertionService = new RuleConverter(ruleValidationService);
+            var watchedDirectoryConvertionService = new WatchedDirectoryConverter(watchedDirectoryValidationService);
+            var systemWatcherConvertionService = new SystemWatcherConverter(ruleConvertionService, watchedDirectoryConvertionService);
 
-                var watchedDirectories = systemWatcherSection.WatchedDirectories;
+            var systemWathcerSection = (SystemWatcherConfigurationSection)
+                ConfigurationManager.GetSection("systemWatcher");
 
-                foreach (WatchedDirectoryElement watchedDirectory in watchedDirectories)
-                {
-                    Console.WriteLine(watchedDirectory.DirectoryPath);
-                }
+            var systemWatcher = systemWatcherConvertionService.Convert(systemWathcerSection);
 
-                var watcher = new CustomFileSystemWatcher();
-                watcher.Path = systemWatcherSection.Rules.DefaultDirectoryPath;
+            // Todo: implement fabric to configure multiple directories for CustomFileSystemWatcher
+            var watcher = new CustomFileSystemWatcher();
+            watcher.Path = systemWatcher.WatchedDirectories.FirstOrDefault().DirectoryInfo.FullName;
 
-                SetupWatcherNotifyFilters(watcher);
-                SetupWatcherFilter(watcher);
-                SetupWatcherEventHandlers(watcher);
-
-                watcher.EnableRaisingEvents = true;
-
-                Console.WriteLine("Press \'q\' to quit the sample.");
-                while (Console.Read() != 'q') ;
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine($"Something went wrong {exception.Message}");
-            }
-        }
-
-        private static void SetupWatcherPath(CustomFileSystemWatcher watcher, string directoryPath)
-        {
-            watcher.Path = directoryPath;
-        }
-
-        private static void SetupWatcherNotifyFilters(CustomFileSystemWatcher watcher)
-        {
-            watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
+            var notifyFilters = NotifyFilters.LastAccess | NotifyFilters.LastWrite
                 | NotifyFilters.FileName | NotifyFilters.DirectoryName;
-        }
+            watcher.NotifyFilter = notifyFilters;
 
-        private static void SetupWatcherFilter(CustomFileSystemWatcher watcher)
-        {
-            watcher.Filter = "*.txt";
-        }
+            // Tracking all files due to "real" filtration via regular expressions from rules
+            watcher.Filter = "*.*";
 
-        private static void SetupWatcherEventHandlers(CustomFileSystemWatcher watcher)
-        {
             watcher.Changed += new FileSystemEventHandler(OnChanged);
             watcher.Created += new FileSystemEventHandler(OnChanged);
             watcher.Deleted += new FileSystemEventHandler(OnChanged);
             watcher.Renamed += new RenamedEventHandler(OnRenamed);
+
+            watcher.EnableRaisingEvents = true;
+
+            //try
+            //{
+            //    Console.WriteLine("Press \'q\' to quit the sample.");
+            //    while (Console.Read() != 'q') ;
+            //}
+            //catch (Exception exception)
+            //{
+            //    Console.WriteLine($"Something went wrong {exception.Message}");
+            //}
         }
 
         private static void OnChanged(object source, FileSystemEventArgs e)
