@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
-using System.IO;
 using System.Linq;
 using SystemWatcherSolution.Models.Configuration;
+using SystemWatcherSolution.Models.Entities;
 using SystemWatcherSolution.Services;
 using SystemWatcherSolution.Services.Converting;
 using SystemWatcherSolution.Services.Validation;
@@ -26,42 +27,18 @@ namespace SystemWatcherSolution
             var systemWatcher = systemWatcherConvertionService.Convert(systemWathcerSection);
 
             // Todo: implement fabric to configure multiple directories for CustomFileSystemWatcher
-            var watcher = new CustomFileSystemWatcher();
-            watcher.Path = systemWatcher.WatchedDirectories.FirstOrDefault().DirectoryInfo.FullName;
+            var path = systemWatcher.WatchedDirectories.FirstOrDefault().DirectoryInfo.FullName;
+            var watcher = new CustomFileSystemWatcher(path, new List<Rule>(systemWatcher.Rules));
 
-            var notifyFilters = NotifyFilters.LastAccess | NotifyFilters.LastWrite
-                | NotifyFilters.FileName | NotifyFilters.DirectoryName;
-            watcher.NotifyFilter = notifyFilters;
-
-            // Tracking all files due to "real" filtration via regular expressions from rules
-            watcher.Filter = "*.*";
-
-            watcher.Changed += new FileSystemEventHandler(OnChanged);
-            watcher.Created += new FileSystemEventHandler(OnChanged);
-            watcher.Deleted += new FileSystemEventHandler(OnChanged);
-            watcher.Renamed += new RenamedEventHandler(OnRenamed);
-
-            watcher.EnableRaisingEvents = true;
-
-            //try
-            //{
-            //    Console.WriteLine("Press \'q\' to quit the sample.");
-            //    while (Console.Read() != 'q') ;
-            //}
-            //catch (Exception exception)
-            //{
-            //    Console.WriteLine($"Something went wrong {exception.Message}");
-            //}
-        }
-
-        private static void OnChanged(object source, FileSystemEventArgs e)
-        {
-            Console.WriteLine("File: " + e.FullPath + " " + e.ChangeType);
-        }
-
-        private static void OnRenamed(object source, RenamedEventArgs e)
-        {
-            Console.WriteLine("File: {0} renamed to {1}", e.OldFullPath, e.FullPath);
+            try
+            {
+                Console.WriteLine("Press \'q\' to quit the sample.");
+                while (Console.Read() != 'q') ;
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"Something went wrong {exception.Message}");
+            }
         }
     }
 }
