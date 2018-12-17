@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
 using SystemWatcherSolution.Models.Configuration;
 using SystemWatcherSolution.Models.Entities;
 using SystemWatcherSolution.Services;
@@ -12,7 +11,47 @@ namespace SystemWatcherSolution
 {
     class Program
     {
+        private static bool _isCanceled;
+
         static void Main(string[] args)
+        {
+            Console.CancelKeyPress += new ConsoleCancelEventHandler(Console_CancelKeyPress);
+
+            InitializeSystemWatchers();
+
+            try
+            {
+                Console.WriteLine("Press Ctrl+C or Ctrl+Break to quit the sample.");
+                while (!_isCanceled);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"Something went wrong {exception.Message}");
+            }
+        }
+
+        static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
+        {
+            if (e.SpecialKey == ConsoleSpecialKey.ControlC 
+                || e.SpecialKey == ConsoleSpecialKey.ControlBreak)
+            {
+                _isCanceled = true;
+                e.Cancel = true;
+            }
+        }
+
+        private static void InitializeSystemWatchers()
+        {
+            var systemWatcherSettings = GetSystemWatcherSettings();
+
+            var customSystemWatcherFactory = new CustomFileSystemWatcherFactory();
+            foreach (var watchedDirectory in systemWatcherSettings.WatchedDirectories)
+            {
+                customSystemWatcherFactory.CreateInstance(watchedDirectory.DirectoryInfo.FullName, new List<Rule>(systemWatcherSettings.Rules));
+            }
+        }
+
+        private static SystemWatcher GetSystemWatcherSettings()
         {
             var ruleValidationService = new RuleValidation();
             var watchedDirectoryValidationService = new WatchedDirectoryValidation();
@@ -24,21 +63,7 @@ namespace SystemWatcherSolution
             var systemWathcerSection = (SystemWatcherConfigurationSection)
                 ConfigurationManager.GetSection("systemWatcher");
 
-            var systemWatcher = systemWatcherConvertionService.Convert(systemWathcerSection);
-
-            // Todo: implement fabric to configure multiple directories for CustomFileSystemWatcher
-            var path = systemWatcher.WatchedDirectories.FirstOrDefault().DirectoryInfo.FullName;
-            var watcher = new CustomFileSystemWatcher(path, new List<Rule>(systemWatcher.Rules));
-
-            try
-            {
-                Console.WriteLine("Press \'q\' to quit the sample.");
-                while (Console.Read() != 'q') ;
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine($"Something went wrong {exception.Message}");
-            }
+            return systemWatcherConvertionService.Convert(systemWathcerSection);
         }
     }
 }

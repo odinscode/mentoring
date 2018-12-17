@@ -73,6 +73,8 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Services\Converting\RuleConverter.cs" />
+    <Compile Include="Services\CustomFileSystemWatcherFactory.cs" />
+    <Compile Include="Services\ICustomFileSystemWatcherFactory.cs" />
     <Compile Include="Services\Validation\IElementValidation.cs" />
     <Compile Include="Services\Validation\RuleValidation.cs" />
     <Compile Include="Services\Validation\WatchedDirectoryValidation.cs" />
