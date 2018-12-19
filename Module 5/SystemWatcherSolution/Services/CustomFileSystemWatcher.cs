@@ -4,18 +4,21 @@ using System.IO;
 using System.Linq;
 using SystemWatcherSolution.Models.Entities;
 using SystemWatcherSolution.Models.EventArgs;
-using SystemWatcherSolution.Models.EventHandlers;
 
 namespace SystemWatcherSolution.Services
 {
     public class CustomFileSystemWatcher : FileSystemWatcher
     {
+        private object lockObject = new object();
+
+        public DirectoryInfo DefaultDirectory { get; set; }
         public List<Rule> Rules { get; set; }
 
-        public event RuleEventHandler RuleMatched;
+        public event EventHandler<RuleEventArgs> RuleMatched;
         public event EventHandler<RuleEventArgs> RuleMismatched;
+        public event EventHandler<AllRulesMismatchedEventArgs> AllRulesMismathced;
 
-        public CustomFileSystemWatcher(string path) : base(path)
+        public CustomFileSystemWatcher(string monitoringDirectoryPath, DirectoryInfo DefaultDirectory) : base(monitoringDirectoryPath)
         {
             this.Rules = new List<Rule>();
             this.Filter = "*.*";
@@ -28,13 +31,7 @@ namespace SystemWatcherSolution.Services
             SetupEvents();
         }
 
-        public CustomFileSystemWatcher(string path, Rule rule) : this(path)
-        {
-            if (!IsRuleAdded(rule))
-                this.Rules.Add(rule);
-        }
-
-        public CustomFileSystemWatcher(string path, List<Rule> rules) : this(path)
+        public CustomFileSystemWatcher(string monitoringDirectoryPath, List<Rule> rules, DirectoryInfo DefaultDirectory) : this(monitoringDirectoryPath, DefaultDirectory)
         {
             foreach (var rule in rules)
             {
@@ -45,19 +42,17 @@ namespace SystemWatcherSolution.Services
 
         private bool IsRuleAdded(Rule rule)
         {
-            return 
-                this.Rules.FirstOrDefault(p => p.Regex == rule.Regex) == null
-                    ? false
-                    : true;
+            return this.Rules.Any(p => p.Regex == rule.Regex);
         }
 
         private void SetupEvents()
         {
-            this.RuleMatched += new RuleEventHandler(OnRuleMathced);
+            this.RuleMatched += new EventHandler<RuleEventArgs>(OnRuleMathced);
             this.RuleMismatched += new EventHandler<RuleEventArgs>(OnRuleMismatched);
+            this.AllRulesMismathced += new EventHandler<AllRulesMismatchedEventArgs>(OnAllRulesMismatched);
             this.Changed += new FileSystemEventHandler(OnChanged);
-            this.Created += new FileSystemEventHandler(OnChanged);
-            this.Deleted += new FileSystemEventHandler(OnChanged);
+            this.Created += new FileSystemEventHandler(OnCreated);
+            this.Deleted += new FileSystemEventHandler(OnDeleted);
             this.Renamed += new RenamedEventHandler(OnRenamed);
         }
 
@@ -71,10 +66,26 @@ namespace SystemWatcherSolution.Services
             Console.WriteLine($"{e.Rule} is not matched");
         }
 
+        private void OnAllRulesMismatched(object sender, AllRulesMismatchedEventArgs e)
+        {
+            Console.WriteLine($"All rules mismached on {e.FileName}, file will be moved to {e.DefaultDirectoryPath}");
+        }
+
         private void OnChanged(object source, FileSystemEventArgs e)
         {
             CheckRuleMatchingAndMoveFile(e.FullPath);
-            Console.WriteLine("File: " + e.FullPath + " " + e.ChangeType);
+            Console.WriteLine($"File: {e.FullPath} changed");
+        }
+
+        private void OnCreated(object sender, FileSystemEventArgs e)
+        {
+            CheckRuleMatchingAndMoveFile(e.FullPath);
+            Console.WriteLine($"File: {e.FullPath} created");
+        }
+
+        private void OnDeleted(object sender, FileSystemEventArgs e)
+        {
+            Console.WriteLine($"File: {e.FullPath} deleted");
         }
 
         private void OnRenamed(object source, RenamedEventArgs e)
@@ -83,29 +94,51 @@ namespace SystemWatcherSolution.Services
             Console.WriteLine("File: {0} renamed to {1}", e.OldFullPath, e.FullPath);
         }
 
-        private void CheckRuleMatchingAndMoveFile(string fullPath)
+        private void CheckRuleMatchingAndMoveFile(string sourceFileName)
         {
-            var fileName = System.IO.Path.GetFileName(fullPath);
+            var originalFileName = System.IO.Path.GetFileName(sourceFileName);
 
-            // todo: localize ChangeType values
+            bool isAnyRuleMatched = false;
+
             foreach (var rule in this.Rules)
             {
-                if (rule.Regex.IsMatch(fileName))
+                string modifiableFileName = string.Copy(originalFileName);
+
+                if (rule.Regex.IsMatch(originalFileName))
                 {
+                    isAnyRuleMatched = true;
                     RuleMatched?.Invoke(this, new RuleEventArgs(rule.Regex.ToString()));
                     // todo: use naming conventions as specified in task (creation date and order number)
-                    var destinationPath = $@"{rule.TargetDirectory.FullName}\{fileName}";
-                    // todo: check if destination folder already have file inside of it
-                    System.IO.File.Copy(fullPath, destinationPath);
+                    if (rule.IsOrderNumberRequired)
+                    {
+                        // singleton class for handling orderNumber counting
+                    }
+
+                    var destinationFileName = $@"{rule.TargetDirectory.FullName}\{modifiableFileName}";
+                    CheckFileExistanceAndCopyToDestination(sourceFileName, destinationFileName);
                 }
                 else
-                {
                     RuleMismatched?.Invoke(this, new RuleEventArgs(rule.Regex.ToString()));
-                    // todo: move file to default folder which is not stored in rule section
-                }
             }
 
-            // todo: file must be deleted after been copied
+            if (!isAnyRuleMatched)
+            {
+                AllRulesMismathced?.Invoke(this, new AllRulesMismatchedEventArgs(sourceFileName, this.DefaultDirectory.FullName));
+
+                var destinationPath = $@"{this.DefaultDirectory.FullName}\{originalFileName}";
+                CheckFileExistanceAndCopyToDestination(sourceFileName, destinationPath);
+            }
+
+            File.Delete(sourceFileName);
+        }
+
+        private void CheckFileExistanceAndCopyToDestination(string sourceFileName, string destinationFileName)
+        {
+            lock (this.lockObject)
+            {
+                if (File.Exists(sourceFileName))
+                    File.Copy(sourceFileName, destinationFileName, true);
+            }
         }
     }
 }

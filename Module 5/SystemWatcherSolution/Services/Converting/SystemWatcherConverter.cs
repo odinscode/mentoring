@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using SystemWatcherSolution.Models.Configuration;
 using SystemWatcherSolution.Models.Entities;
 
 namespace SystemWatcherSolution.Services.Converting
 {
-    public class SystemWatcherConverter 
+    public class SystemWatcherConverter
         : IElementConverter<SystemWatcherConfigurationSection, SystemWatcher>
     {
         private readonly IElementConverter<RuleElement, Rule> ruleConvertionService;
@@ -40,6 +41,9 @@ namespace SystemWatcherSolution.Services.Converting
                 directories.Add(directory);
             }
             systemWatcher.WatchedDirectories = directories;
+
+            var defalutDirectoryPath = source.Rules.DefaultDirectoryPath;
+            systemWatcher.DefaultDirectory = new DirectoryInfo(defalutDirectoryPath);
 
             return systemWatcher;
         }

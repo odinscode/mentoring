@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using SystemWatcherSolution.Models.Entities;
 
 namespace SystemWatcherSolution.Services
 {
-    public class CustomFileSystemWatcherFactory : ICustomFileSystemWatcherFactory
+    public class CustomFileSystemWatcherFactory
     {
-        public CustomFileSystemWatcher CreateInstance(string directoryPath, List<Rule> rules)
+        public CustomFileSystemWatcher CreateInstance(string monitoringDirectoryPath, List<Rule> rules, DirectoryInfo defaultDirectory)
         {
-            return new CustomFileSystemWatcher(directoryPath, rules);
+            return new CustomFileSystemWatcher(monitoringDirectoryPath, rules, defaultDirectory);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using SystemWatcherSolution.Models.Configuration;
 using SystemWatcherSolution.Models.Entities;
 using SystemWatcherSolution.Services;
@@ -47,7 +48,8 @@ namespace SystemWatcherSolution
             var customSystemWatcherFactory = new CustomFileSystemWatcherFactory();
             foreach (var watchedDirectory in systemWatcherSettings.WatchedDirectories)
             {
-                customSystemWatcherFactory.CreateInstance(watchedDirectory.DirectoryInfo.FullName, new List<Rule>(systemWatcherSettings.Rules));
+                var customSystemWatcher = customSystemWatcherFactory.CreateInstance(watchedDirectory.DirectoryInfo.FullName, systemWatcherSettings.Rules.ToList(), systemWatcherSettings.DefaultDirectory);
+                customSystemWatcher.RuleMatched += RuleHelper.OnRuleMatched;
             }
         }
 

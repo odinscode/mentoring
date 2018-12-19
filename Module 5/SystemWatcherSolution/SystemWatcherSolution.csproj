@@ -57,8 +57,8 @@
     <Compile Include="Models\Configuration\WatchedDirectoryElementCollection.cs" />
     <Compile Include="Models\Entities\SystemWatcher.cs" />
     <Compile Include="Models\Entities\WatchedDirectory.cs" />
+    <Compile Include="Models\EventArgs\AllRulesMismatchedEventArgs.cs" />
     <Compile Include="Models\EventArgs\RuleEventArgs.cs" />
-    <Compile Include="Models\EventHandlers\RuleEventHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\Resources.Designer.cs">
@@ -74,7 +74,7 @@
     </Compile>
     <Compile Include="Services\Converting\RuleConverter.cs" />
     <Compile Include="Services\CustomFileSystemWatcherFactory.cs" />
-    <Compile Include="Services\ICustomFileSystemWatcherFactory.cs" />
+    <Compile Include="Services\RuleHelper.cs" />
     <Compile Include="Services\Validation\IElementValidation.cs" />
     <Compile Include="Services\Validation\RuleValidation.cs" />
     <Compile Include="Services\Validation\WatchedDirectoryValidation.cs" />
