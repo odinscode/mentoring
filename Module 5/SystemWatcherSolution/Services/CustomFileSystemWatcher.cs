@@ -16,16 +16,17 @@ namespace SystemWatcherSolution.Services
 
         public event EventHandler<RuleEventArgs> RuleMatched;
         public event EventHandler<RuleEventArgs> RuleMismatched;
-        public event EventHandler<AllRulesMismatchedEventArgs> AllRulesMismathced;
+        public event EventHandler<AllRulesMismatchedEventArgs> AllRulesMismatched;
 
         public CustomFileSystemWatcher(string monitoringDirectoryPath, DirectoryInfo DefaultDirectory) : base(monitoringDirectoryPath)
         {
+            this.DefaultDirectory = DefaultDirectory;
             this.Rules = new List<Rule>();
             this.Filter = "*.*";
             this.EnableRaisingEvents = true;
 
             var notifyFilters = NotifyFilters.LastAccess | NotifyFilters.LastWrite
-                 | NotifyFilters.FileName | NotifyFilters.DirectoryName;
+                 | NotifyFilters.FileName;
             this.NotifyFilter = notifyFilters;
 
             SetupEvents();
@@ -47,16 +48,16 @@ namespace SystemWatcherSolution.Services
 
         private void SetupEvents()
         {
-            this.RuleMatched += new EventHandler<RuleEventArgs>(OnRuleMathced);
+            this.RuleMatched += new EventHandler<RuleEventArgs>(OnRuleMatched);
             this.RuleMismatched += new EventHandler<RuleEventArgs>(OnRuleMismatched);
-            this.AllRulesMismathced += new EventHandler<AllRulesMismatchedEventArgs>(OnAllRulesMismatched);
+            this.AllRulesMismatched += new EventHandler<AllRulesMismatchedEventArgs>(OnAllRulesMismatched);
             this.Changed += new FileSystemEventHandler(OnChanged);
             this.Created += new FileSystemEventHandler(OnCreated);
             this.Deleted += new FileSystemEventHandler(OnDeleted);
             this.Renamed += new RenamedEventHandler(OnRenamed);
         }
 
-        private void OnRuleMathced(object sender, RuleEventArgs e)
+        private void OnRuleMatched(object sender, RuleEventArgs e)
         {
             Console.WriteLine($"{e.Rule} is matched");
         }
@@ -73,7 +74,6 @@ namespace SystemWatcherSolution.Services
 
         private void OnChanged(object source, FileSystemEventArgs e)
         {
-            CheckRuleMatchingAndMoveFile(e.FullPath);
             Console.WriteLine($"File: {e.FullPath} changed");
         }
 
@@ -107,29 +107,25 @@ namespace SystemWatcherSolution.Services
                 if (rule.Regex.IsMatch(originalFileName))
                 {
                     isAnyRuleMatched = true;
-                    RuleMatched?.Invoke(this, new RuleEventArgs(rule.Regex.ToString()));
-                    // todo: use naming conventions as specified in task (creation date and order number)
-                    if (rule.IsOrderNumberRequired)
-                    {
-                        // singleton class for handling orderNumber counting
-                    }
+
+                    RuleMatched?.Invoke(this, new RuleEventArgs(rule));
+
+                    //modifiableFileName = RuleHelper.UpdateFileName(modifiableFileName, rule, this.Path);
 
                     var destinationFileName = $@"{rule.TargetDirectory.FullName}\{modifiableFileName}";
                     CheckFileExistanceAndCopyToDestination(sourceFileName, destinationFileName);
                 }
                 else
-                    RuleMismatched?.Invoke(this, new RuleEventArgs(rule.Regex.ToString()));
+                    RuleMismatched?.Invoke(this, new RuleEventArgs(rule));
             }
 
             if (!isAnyRuleMatched)
             {
-                AllRulesMismathced?.Invoke(this, new AllRulesMismatchedEventArgs(sourceFileName, this.DefaultDirectory.FullName));
+                AllRulesMismatched?.Invoke(this, new AllRulesMismatchedEventArgs(sourceFileName, this.DefaultDirectory.FullName));
 
-                var destinationPath = $@"{this.DefaultDirectory.FullName}\{originalFileName}";
-                CheckFileExistanceAndCopyToDestination(sourceFileName, destinationPath);
+                var destinationFileName = $@"{this.DefaultDirectory.FullName}\{originalFileName}";
+                CheckFileExistanceAndCopyToDestination(sourceFileName, destinationFileName);
             }
-
-            File.Delete(sourceFileName);
         }
 
         private void CheckFileExistanceAndCopyToDestination(string sourceFileName, string destinationFileName)

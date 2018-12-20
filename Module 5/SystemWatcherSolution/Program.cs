@@ -48,8 +48,7 @@ namespace SystemWatcherSolution
             var customSystemWatcherFactory = new CustomFileSystemWatcherFactory();
             foreach (var watchedDirectory in systemWatcherSettings.WatchedDirectories)
             {
-                var customSystemWatcher = customSystemWatcherFactory.CreateInstance(watchedDirectory.DirectoryInfo.FullName, systemWatcherSettings.Rules.ToList(), systemWatcherSettings.DefaultDirectory);
-                customSystemWatcher.RuleMatched += RuleHelper.OnRuleMatched;
+                customSystemWatcherFactory.CreateInstance(watchedDirectory.DirectoryInfo.FullName, systemWatcherSettings.Rules.ToList(), systemWatcherSettings.DefaultDirectory);
             }
         }
 

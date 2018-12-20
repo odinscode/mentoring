@@ -1,12 +1,13 @@
 ﻿namespace SystemWatcherSolution.Models.EventArgs
 {
     using System;
+    using SystemWatcherSolution.Models.Entities;
 
     public class RuleEventArgs : EventArgs
     {
-        public string Rule { get; set; }
+        public Rule Rule { get; set; }
 
-        public RuleEventArgs(string rule)
+        public RuleEventArgs(Rule rule)
         {
             this.Rule = rule;
         }
