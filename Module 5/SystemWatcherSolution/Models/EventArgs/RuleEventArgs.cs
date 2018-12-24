@@ -7,9 +7,12 @@
     {
         public Rule Rule { get; set; }
 
-        public RuleEventArgs(Rule rule)
+        public string FileName { get; set; }
+
+        public RuleEventArgs(Rule rule, string fileName)
         {
             this.Rule = rule;
+            this.FileName = fileName;
         }
     }
 }

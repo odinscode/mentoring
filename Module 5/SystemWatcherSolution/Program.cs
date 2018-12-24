@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
+using System.Globalization;
 using System.Linq;
 using SystemWatcherSolution.Models.Configuration;
 using SystemWatcherSolution.Models.Entities;
@@ -45,11 +45,21 @@ namespace SystemWatcherSolution
         {
             var systemWatcherSettings = GetSystemWatcherSettings();
 
+            // todo: think about better place to setup culture
+            SetupCultureFromConfigFile(systemWatcherSettings.Culture);
+
             var customSystemWatcherFactory = new CustomFileSystemWatcherFactory();
             foreach (var watchedDirectory in systemWatcherSettings.WatchedDirectories)
             {
                 customSystemWatcherFactory.CreateInstance(watchedDirectory.DirectoryInfo.FullName, systemWatcherSettings.Rules.ToList(), systemWatcherSettings.DefaultDirectory);
             }
+        }
+
+        private static void SetupCultureFromConfigFile(CultureInfo culture)
+        {
+            CultureInfo.CurrentCulture = culture;
+            // todo: is it necessary to specify UI culture?
+            //CultureInfo.CurrentUICulture = culture;
         }
 
         private static SystemWatcher GetSystemWatcherSettings()

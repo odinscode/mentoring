@@ -59,12 +59,12 @@ namespace SystemWatcherSolution.Services
 
         private void OnRuleMatched(object sender, RuleEventArgs e)
         {
-            Console.WriteLine($"{e.Rule} is matched");
+            Console.WriteLine($"{e.Rule} is matched on {e.FileName}");
         }
 
         private void OnRuleMismatched(object sender, RuleEventArgs e)
         {
-            Console.WriteLine($"{e.Rule} is not matched");
+            Console.WriteLine($"{e.Rule} is not matched on {e.FileName}");
         }
 
         private void OnAllRulesMismatched(object sender, AllRulesMismatchedEventArgs e)
@@ -108,15 +108,15 @@ namespace SystemWatcherSolution.Services
                 {
                     isAnyRuleMatched = true;
 
-                    RuleMatched?.Invoke(this, new RuleEventArgs(rule));
+                    RuleMatched?.Invoke(this, new RuleEventArgs(rule, originalFileName));
 
-                    //modifiableFileName = RuleHelper.UpdateFileName(modifiableFileName, rule, this.Path);
+                    modifiableFileName = RuleHelper.UpdateFileName(modifiableFileName, rule, this.Path);
 
                     var destinationFileName = $@"{rule.TargetDirectory.FullName}\{modifiableFileName}";
                     CheckFileExistanceAndCopyToDestination(sourceFileName, destinationFileName);
                 }
                 else
-                    RuleMismatched?.Invoke(this, new RuleEventArgs(rule));
+                    RuleMismatched?.Invoke(this, new RuleEventArgs(rule, originalFileName));
             }
 
             if (!isAnyRuleMatched)

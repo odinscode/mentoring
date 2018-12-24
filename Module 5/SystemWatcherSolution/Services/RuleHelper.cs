@@ -9,8 +9,7 @@ namespace SystemWatcherSolution.Services
     {
         public string WatchedDirectory { get; set; }
 
-        // todo: use at dictionary string == name of regex as a key parameter
-        public Dictionary<Rule, int> Rules { get; set; }
+        public Dictionary<string, int> RulesCounter { get; set; }
     }
 
     public static class RuleHelper
@@ -21,83 +20,58 @@ namespace SystemWatcherSolution.Services
 
         public static string UpdateFileName(string fileName, Rule rule, string watchedDirectoryPath)
         {
-            if (IsOrderNumberRequired(rule))
+            if (rule.IsOrderNumberRequired)
             {
                 lock (lockObject)
                 {
                     fileName = AddOrderNumberToFileName(fileName, rule, watchedDirectoryPath);
                 }
             }
-            // todo: finish moveDate logic
-            //if (IsMoveDateRequired(rule))
-            //{
-            //    modifiableFileName = AddMoveDateToFileName(fileName, rule, watchedDirectoryPath);
-            //}
+            if (rule.IsMovedDateRequired)
+            {
+                lock (lockObject)
+                {
+                    fileName = AddMoveDateToFileName(fileName, rule, watchedDirectoryPath);
+                }
+            }
 
             return fileName;
         }
 
-        private static string AddMoveDateToFileName(string fileName, Rule rule, string watchedDirectoryPath)
-        {
-            throw new NotImplementedException();
-        }
-
         private static string AddOrderNumberToFileName(string fileName, Rule rule, string watchedDirectoryPath)
         {
-            if (!IsWatchedDirectoryAdded(watchedDirectoryPath))
-                AddWatchedDirectoryAndRule(watchedDirectoryPath, rule);
-            if (!IsRuleAdded(watchedDirectoryPath, rule))
-            {
-                //AddRuleToWatchedDirectory(watchedDirectoryPath, rule);
-            }
-            // todo: if directory was already added but not the rule - add that logic
+            EnsureDirectoryAndRuleAdded(watchedDirectoryPath, rule);
 
-            var updatedOrderNumber = GetUpdatedOrderNumberForRule(watchedDirectoryPath, rule);
+            int updatedOrderNumber = GetUpdatedOrderNumberForRule(watchedDirectoryPath, rule);
 
             return $"{updatedOrderNumber}) {fileName}";
         }
 
-        private static bool IsRuleAdded(string watchedDirectoryPath, Rule rule)
+        private static string AddMoveDateToFileName(string fileName, Rule rule, string watchedDirectoryPath)
         {
-            throw new NotImplementedException();
+            EnsureDirectoryAndRuleAdded(watchedDirectoryPath, rule);
+
+            string updatedMoveDate = GetUpdatedMoveDateForRule(watchedDirectoryPath, rule);
+
+            return $"{fileName} {updatedMoveDate}";
         }
 
-        private static bool IsMoveDateRequired(Rule rule)
+        private static void EnsureDirectoryAndRuleAdded(string watchedDirectoryPath, Rule rule)
         {
-            return rule.IsMovedDateRequired;
+            EnsureDirectoryAdded(watchedDirectoryPath, rule);
+            EnsureRuleAdded(watchedDirectoryPath, rule);
         }
 
-        private static bool IsOrderNumberRequired(Rule rule)
+        private static void EnsureDirectoryAdded(string watchedDirectoryPath, Rule rule)
         {
-            return rule.IsOrderNumberRequired;
+            if (!IsWatchedDirectoryAdded(watchedDirectoryPath))
+                AddWatchedDirectoryAndRule(watchedDirectoryPath, rule);
         }
 
-        private static int GetUpdatedOrderNumberForRule(string watchedDirectoryPath, Rule rule)
+        private static void EnsureRuleAdded(string watchedDirectoryPath, Rule rule)
         {
-            int currentPosition = GetCurrentOrderNumberForRule(watchedDirectoryPath, rule);
-            UpdateCurrentOrderNumberForRule(watchedDirectoryPath, rule, currentPosition);
-            return GetCurrentOrderNumberForRule(watchedDirectoryPath, rule);
-        }
-
-        private static void UpdateCurrentOrderNumberForRule(string watchedDirectoryPath, Rule rule, int previousOrderNumber)
-        {
-            var storedRule = TrackedDirectoriesAndRules
-                .FirstOrDefault(d => d.WatchedDirectory == watchedDirectoryPath)
-                    .Rules
-                    .FirstOrDefault(r => r.Key.Name == rule.Name);
-
-            TrackedDirectoriesAndRules
-                .FirstOrDefault(d => d.WatchedDirectory == watchedDirectoryPath)
-                .Rules[storedRule.Key] = ++previousOrderNumber;
-        }
-
-        private static int GetCurrentOrderNumberForRule(string watchedDirectoryPath, Rule rule)
-        {
-            return TrackedDirectoriesAndRules
-                    .FirstOrDefault(d => d.WatchedDirectory == watchedDirectoryPath)
-                    .Rules
-                    .FirstOrDefault(r => r.Key.Name == rule.Name)
-                    .Value;
+            if (!IsRuleAdded(watchedDirectoryPath, rule))
+                AddRuleToWatchedDirectory(watchedDirectoryPath, rule);
         }
 
         private static bool IsWatchedDirectoryAdded(string watchedDirectoryPath)
@@ -110,11 +84,65 @@ namespace SystemWatcherSolution.Services
             var ruleHelper = new RuleHelperModel()
             {
                 WatchedDirectory = watchedDirectoryPath,
-                Rules = new Dictionary<Rule, int>()
+                RulesCounter = new Dictionary<string, int>()
                 {
-                    { rule, 0 }
+                    { rule.Name, 0 }
                 }
             };
+
+            TrackedDirectoriesAndRules.Add(ruleHelper);
+        }
+
+        private static bool IsRuleAdded(string watchedDirectoryPath, Rule rule)
+        {
+            return TrackedDirectoriesAndRules
+                .FirstOrDefault(d => d.WatchedDirectory == watchedDirectoryPath)
+                .RulesCounter
+                .Keys
+                .Any(k => k == rule.Name);
+        }
+
+        private static void AddRuleToWatchedDirectory(string watchedDirectoryPath, Rule rule)
+        {
+            TrackedDirectoriesAndRules
+                .FirstOrDefault(d => d.WatchedDirectory == watchedDirectoryPath)
+                .RulesCounter
+                .Add(rule.Name, 0);
+        }
+
+        private static int GetUpdatedOrderNumberForRule(string watchedDirectoryPath, Rule rule)
+        {
+            int currentPosition = GetCurrentOrderNumberForRule(watchedDirectoryPath, rule);
+            UpdateCurrentOrderNumberForRule(watchedDirectoryPath, rule, currentPosition);
+
+            return GetCurrentOrderNumberForRule(watchedDirectoryPath, rule);
+        }
+
+        private static void UpdateCurrentOrderNumberForRule(string watchedDirectoryPath, Rule rule, int previousOrderNumber)
+        {
+            var storedRule = TrackedDirectoriesAndRules
+                .FirstOrDefault(d => d.WatchedDirectory == watchedDirectoryPath)
+                    .RulesCounter
+                    .FirstOrDefault(r => r.Key == rule.Name);
+
+            TrackedDirectoriesAndRules
+                .FirstOrDefault(d => d.WatchedDirectory == watchedDirectoryPath)
+                .RulesCounter[storedRule.Key] = ++previousOrderNumber;
+        }
+
+        private static int GetCurrentOrderNumberForRule(string watchedDirectoryPath, Rule rule)
+        {
+            return TrackedDirectoriesAndRules
+                    .FirstOrDefault(d => d.WatchedDirectory == watchedDirectoryPath)
+                    .RulesCounter
+                    .FirstOrDefault(r => r.Key == rule.Name)
+                    .Value;
+        }
+
+        private static string GetUpdatedMoveDateForRule(string watchedDirectoryPath, Rule rule)
+        {
+            var currentCultureDateFormat = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern;
+            return DateTime.Now.ToString(currentCultureDateFormat);
         }
     }
 }

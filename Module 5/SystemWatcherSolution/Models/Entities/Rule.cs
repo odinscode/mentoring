@@ -14,5 +14,10 @@ namespace SystemWatcherSolution.Models.Entities
         public bool IsOrderNumberRequired { get; set; }
 
         public bool IsMovedDateRequired { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Name} - {Regex.ToString()}";
+        }
     }
 }
