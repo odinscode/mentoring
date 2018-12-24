@@ -13,7 +13,7 @@ namespace SystemWatcherSolution.Models.Entities
 
         public bool IsOrderNumberRequired { get; set; }
 
-        public bool IsMovedDateRequired { get; set; }
+        public bool IsMovedTimeRequired { get; set; }
 
         public override string ToString()
         {

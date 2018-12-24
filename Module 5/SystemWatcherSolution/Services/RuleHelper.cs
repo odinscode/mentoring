@@ -27,11 +27,11 @@ namespace SystemWatcherSolution.Services
                     fileName = AddOrderNumberToFileName(fileName, rule, watchedDirectoryPath);
                 }
             }
-            if (rule.IsMovedDateRequired)
+            if (rule.IsMovedTimeRequired)
             {
                 lock (lockObject)
                 {
-                    fileName = AddMoveDateToFileName(fileName, rule, watchedDirectoryPath);
+                    fileName = AddMoveTimeToFileName(fileName, rule, watchedDirectoryPath);
                 }
             }
 
@@ -44,16 +44,22 @@ namespace SystemWatcherSolution.Services
 
             int updatedOrderNumber = GetUpdatedOrderNumberForRule(watchedDirectoryPath, rule);
 
-            return $"{updatedOrderNumber}) {fileName}";
+            var fileNameWithoutExtension = System.IO.Path.GetFileNameWithoutExtension(fileName);
+            var fileExtension = System.IO.Path.GetExtension(fileName);
+
+            return $"{fileNameWithoutExtension} ({updatedOrderNumber}){fileExtension}";
         }
 
-        private static string AddMoveDateToFileName(string fileName, Rule rule, string watchedDirectoryPath)
+        private static string AddMoveTimeToFileName(string fileName, Rule rule, string watchedDirectoryPath)
         {
             EnsureDirectoryAndRuleAdded(watchedDirectoryPath, rule);
 
-            string updatedMoveDate = GetUpdatedMoveDateForRule(watchedDirectoryPath, rule);
+            string updatedMoveTime = GetUpdatedMoveTimeForRule(watchedDirectoryPath, rule);
 
-            return $"{fileName} {updatedMoveDate}";
+            var fileNameWithoutExtension = System.IO.Path.GetFileNameWithoutExtension(fileName);
+            var fileExtension = System.IO.Path.GetExtension(fileName);
+
+            return $"{fileNameWithoutExtension} {updatedMoveTime}{fileExtension}";
         }
 
         private static void EnsureDirectoryAndRuleAdded(string watchedDirectoryPath, Rule rule)
@@ -139,10 +145,11 @@ namespace SystemWatcherSolution.Services
                     .Value;
         }
 
-        private static string GetUpdatedMoveDateForRule(string watchedDirectoryPath, Rule rule)
+        private static string GetUpdatedMoveTimeForRule(string watchedDirectoryPath, Rule rule)
         {
-            var currentCultureDateFormat = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern;
-            return DateTime.Now.ToString(currentCultureDateFormat);
+            // We can't specify time in format "HH:mm:ss" due to window's blocking ':'
+            // char in file naming
+            return DateTime.Now.ToString("HH-mm-ss");
         }
     }
 }

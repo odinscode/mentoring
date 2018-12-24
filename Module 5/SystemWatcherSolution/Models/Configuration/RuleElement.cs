@@ -8,7 +8,7 @@ namespace SystemWatcherSolution.Models.Configuration
         private const string RegexAttribute = "regex";
         private const string TargetPathAttribute = "targetDirectoryPath";
         private const string IsOrderNumberRequiredAttribute = "isOrderNumberRequired";
-        private const string IsMovedDateRequiredAttribute = "isMovedDateRequired";
+        private const string IsMovedTimeRequiredAttribute = "isMovedTimeRequired";
 
         [ConfigurationProperty(NameAttribute, IsKey = true, IsRequired = true)]
         public string Name
@@ -34,10 +34,10 @@ namespace SystemWatcherSolution.Models.Configuration
             get { return (bool)base[IsOrderNumberRequiredAttribute]; }
         }
 
-        [ConfigurationProperty(IsMovedDateRequiredAttribute, DefaultValue = "false", IsRequired = false)]
-        public bool IsMovedDateRequired
+        [ConfigurationProperty(IsMovedTimeRequiredAttribute, DefaultValue = "false", IsRequired = false)]
+        public bool IsMovedTimeRequired
         {
-            get { return (bool)base[IsMovedDateRequiredAttribute]; }
+            get { return (bool)base[IsMovedTimeRequiredAttribute]; }
         }
     }
 }

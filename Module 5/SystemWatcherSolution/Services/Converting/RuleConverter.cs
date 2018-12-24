@@ -25,7 +25,7 @@ namespace SystemWatcherSolution.Services.Converting
                 Regex = new Regex(source.Regex),
                 TargetDirectory = new DirectoryInfo(source.TargetPath),
                 IsOrderNumberRequired = source.IsOrderNumberRequired,
-                IsMovedDateRequired = source.IsMovedDateRequired
+                IsMovedTimeRequired = source.IsMovedTimeRequired
             };
 
             return rule;
