@@ -31,6 +31,8 @@ namespace SystemWatcherSolution
 
         static void Main(string[] args)
         {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
             InitializeSystemWatchers();
 
             try
@@ -60,8 +62,8 @@ namespace SystemWatcherSolution
 
         private static void SetupCultureFromConfigFile(CultureInfo culture)
         {
-            CultureInfo.CurrentCulture = culture;
             System.Threading.Thread.CurrentThread.CurrentCulture = culture;
+            System.Threading.Thread.CurrentThread.CurrentUICulture = culture;
         }
 
         private static SystemWatcher GetSystemWatcherSettings()
