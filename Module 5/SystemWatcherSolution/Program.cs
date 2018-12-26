@@ -14,30 +14,33 @@ namespace SystemWatcherSolution
     {
         private static bool _isCanceled;
 
-        static void Main(string[] args)
+        public Program()
         {
             Console.CancelKeyPress += new ConsoleCancelEventHandler(Console_CancelKeyPress);
-
-            InitializeSystemWatchers();
-
-            try
-            {
-                Console.WriteLine("Press Ctrl+C or Ctrl+Break to quit the sample.");
-                while (!_isCanceled);
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine($"Something went wrong {exception.Message}");
-            }
         }
 
         static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {
-            if (e.SpecialKey == ConsoleSpecialKey.ControlC 
+            if (e.SpecialKey == ConsoleSpecialKey.ControlC
                 || e.SpecialKey == ConsoleSpecialKey.ControlBreak)
             {
                 _isCanceled = true;
                 e.Cancel = true;
+            }
+        }
+
+        static void Main(string[] args)
+        {
+            InitializeSystemWatchers();
+
+            try
+            {
+                Console.WriteLine(Resources.Resources.SpecialKeyMessage);
+                while (!_isCanceled);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(string.Format(Resources.Resources.UnexpectedException, exception.Message));
             }
         }
 
@@ -58,8 +61,7 @@ namespace SystemWatcherSolution
         private static void SetupCultureFromConfigFile(CultureInfo culture)
         {
             CultureInfo.CurrentCulture = culture;
-            // todo: is it necessary to specify UI culture?
-            //CultureInfo.CurrentUICulture = culture;
+            System.Threading.Thread.CurrentThread.CurrentCulture = culture;
         }
 
         private static SystemWatcher GetSystemWatcherSettings()

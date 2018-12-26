@@ -70,6 +70,69 @@ namespace SystemWatcherSolution.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to All rules mismatched on file {0}, file will be moved to directory {1}.
+        /// </summary>
+        internal static string OnAllRulesMismatchedEventMessage {
+            get {
+                return ResourceManager.GetString("OnAllRulesMismatchedEventMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File: {0} changed.
+        /// </summary>
+        internal static string OnChangedEventMessage {
+            get {
+                return ResourceManager.GetString("OnChangedEventMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File: {0} created.
+        /// </summary>
+        internal static string OnCreatedEventMessage {
+            get {
+                return ResourceManager.GetString("OnCreatedEventMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File: {0} deleted.
+        /// </summary>
+        internal static string OnDeletedEventMessage {
+            get {
+                return ResourceManager.GetString("OnDeletedEventMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File: {0} renamed to {1}.
+        /// </summary>
+        internal static string OnRenamedEventMessage {
+            get {
+                return ResourceManager.GetString("OnRenamedEventMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} rule is matched on file {1}.
+        /// </summary>
+        internal static string OnRuleMatchedEventMessage {
+            get {
+                return ResourceManager.GetString("OnRuleMatchedEventMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} rule is not matched on file {1}.
+        /// </summary>
+        internal static string OnRuleMismatchedEventMessage {
+            get {
+                return ResourceManager.GetString("OnRuleMismatchedEventMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Regular expression is empty.
         /// </summary>
         internal static string RegularExpressionIsEmptyException {
@@ -84,6 +147,33 @@ namespace SystemWatcherSolution.Resources {
         internal static string RuleIsNotSetException {
             get {
                 return ResourceManager.GetString("RuleIsNotSetException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Press Ctrl+C or Ctrl+Break to quit the sample..
+        /// </summary>
+        internal static string SpecialKeyMessage {
+            get {
+                return ResourceManager.GetString("SpecialKeyMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HH-mm-ss.
+        /// </summary>
+        internal static string TimeFormat {
+            get {
+                return ResourceManager.GetString("TimeFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Something went wrong {0}.
+        /// </summary>
+        internal static string UnexpectedException {
+            get {
+                return ResourceManager.GetString("UnexpectedException", resourceCulture);
             }
         }
     }

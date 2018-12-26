@@ -149,7 +149,7 @@ namespace SystemWatcherSolution.Services
         {
             // We can't specify time in format "HH:mm:ss" due to window's blocking ':'
             // char in file naming
-            return DateTime.Now.ToString("HH-mm-ss");
+            return DateTime.Now.ToString(Resources.Resources.TimeFormat);
         }
     }
 }

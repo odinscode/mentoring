@@ -59,39 +59,39 @@ namespace SystemWatcherSolution.Services
 
         private void OnRuleMatched(object sender, RuleEventArgs e)
         {
-            Console.WriteLine($"{e.Rule} is matched on {e.FileName}");
+            Console.WriteLine(string.Format(Resources.Resources.OnRuleMatchedEventMessage, e.Rule, e.FileName));
         }
 
         private void OnRuleMismatched(object sender, RuleEventArgs e)
         {
-            Console.WriteLine($"{e.Rule} is not matched on {e.FileName}");
+            Console.WriteLine(string.Format(Resources.Resources.OnRuleMismatchedEventMessage, e.Rule, e.FileName));
         }
 
         private void OnAllRulesMismatched(object sender, AllRulesMismatchedEventArgs e)
         {
-            Console.WriteLine($"All rules mismached on {e.FileName}, file will be moved to {e.DefaultDirectoryPath}");
+            Console.WriteLine(string.Format(Resources.Resources.OnAllRulesMismatchedEventMessage, e.FileName, e.DefaultDirectoryPath));
         }
 
         private void OnChanged(object source, FileSystemEventArgs e)
         {
-            Console.WriteLine($"File: {e.FullPath} changed");
+            Console.WriteLine(string.Format(Resources.Resources.OnChangedEventMessage, e.FullPath));
         }
 
         private void OnCreated(object sender, FileSystemEventArgs e)
         {
             CheckRuleMatchingAndMoveFile(e.FullPath);
-            Console.WriteLine($"File: {e.FullPath} created");
+            Console.WriteLine(string.Format(Resources.Resources.OnCreatedEventMessage, e.FullPath));
         }
 
         private void OnDeleted(object sender, FileSystemEventArgs e)
         {
-            Console.WriteLine($"File: {e.FullPath} deleted");
+            Console.WriteLine(string.Format(Resources.Resources.OnDeletedEventMessage, e.FullPath));
         }
 
         private void OnRenamed(object source, RenamedEventArgs e)
         {
             CheckRuleMatchingAndMoveFile(e.FullPath);
-            Console.WriteLine("File: {0} renamed to {1}", e.OldFullPath, e.FullPath);
+            Console.WriteLine(string.Format(Resources.Resources.OnRenamedEventMessage, e.OldFullPath, e.FullPath));
         }
 
         private void CheckRuleMatchingAndMoveFile(string sourceFileName)

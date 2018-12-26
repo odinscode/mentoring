@@ -126,4 +126,34 @@
   <data name="DirectoryNotFoundException" xml:space="preserve">
     <value>Директория {0} не найдена</value>
   </data>
+  <data name="SpecialKeyMessage" xml:space="preserve">
+    <value>Нажмите Ctrl+C или Ctrl+Break для прекращения работы</value>
+  </data>
+  <data name="UnexpectedException" xml:space="preserve">
+    <value>Что-то пошло не так {0}</value>
+  </data>
+  <data name="OnRuleMatchedEventMessage" xml:space="preserve">
+    <value>{0} правило совпало на файле {1}</value>
+  </data>
+  <data name="OnRuleMismatchedEventMessage" xml:space="preserve">
+    <value>{0} правило не совпало на файле {1}</value>
+  </data>
+  <data name="OnAllRulesMismatchedEventMessage" xml:space="preserve">
+    <value>Все правила не совпали на файле {0}, файл будет перемещен в директорию {1}</value>
+  </data>
+  <data name="OnChangedEventMessage" xml:space="preserve">
+    <value>Файл: {0} изменен</value>
+  </data>
+  <data name="OnCreatedEventMessage" xml:space="preserve">
+    <value>Файл: {0} создан</value>
+  </data>
+  <data name="OnDeletedEventMessage" xml:space="preserve">
+    <value>Файл: {0} удален</value>
+  </data>
+  <data name="OnRenamedEventMessage" xml:space="preserve">
+    <value>Файл: {0} переименован в {1}</value>
+  </data>
+  <data name="TimeFormat" xml:space="preserve">
+    <value>HH_mm_ss</value>
+  </data>
 </root>

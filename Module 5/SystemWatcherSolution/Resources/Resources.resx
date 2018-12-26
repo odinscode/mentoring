@@ -126,4 +126,34 @@
   <data name="DirectoryNotFoundException" xml:space="preserve">
     <value>Directory {0} was not found</value>
   </data>
+  <data name="SpecialKeyMessage" xml:space="preserve">
+    <value>Press Ctrl+C or Ctrl+Break to quit the sample.</value>
+  </data>
+  <data name="UnexpectedException" xml:space="preserve">
+    <value>Something went wrong {0}</value>
+  </data>
+  <data name="OnRuleMatchedEventMessage" xml:space="preserve">
+    <value>{0} rule is matched on file {1}</value>
+  </data>
+  <data name="OnRuleMismatchedEventMessage" xml:space="preserve">
+    <value>{0} rule is not matched on file {1}</value>
+  </data>
+  <data name="OnAllRulesMismatchedEventMessage" xml:space="preserve">
+    <value>All rules mismatched on file {0}, file will be moved to directory {1}</value>
+  </data>
+  <data name="OnChangedEventMessage" xml:space="preserve">
+    <value>File: {0} changed</value>
+  </data>
+  <data name="OnCreatedEventMessage" xml:space="preserve">
+    <value>File: {0} created</value>
+  </data>
+  <data name="OnDeletedEventMessage" xml:space="preserve">
+    <value>File: {0} deleted</value>
+  </data>
+  <data name="OnRenamedEventMessage" xml:space="preserve">
+    <value>File: {0} renamed to {1}</value>
+  </data>
+  <data name="TimeFormat" xml:space="preserve">
+    <value>HH-mm-ss</value>
+  </data>
 </root>
