@@ -45,6 +45,7 @@
     <Compile Include="Attributes\ImportAttribute.cs" />
     <Compile Include="Attributes\ImportConstructorAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Container.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
