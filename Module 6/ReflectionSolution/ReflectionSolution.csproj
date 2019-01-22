@@ -58,6 +58,10 @@
       <Project>{1f80c2ca-6317-44a9-8598-1c2489f9a602}</Project>
       <Name>ReflectionSolution.BLL</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ReflectionSolution.DAL\ReflectionSolution.DAL.csproj">
+      <Project>{D2A03463-B257-45E3-B6BF-D9303034F55C}</Project>
+      <Name>ReflectionSolution.DAL</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
