@@ -22,7 +22,7 @@ namespace CustomReflectionLibrary.Services
 
         public object CreateInstance(Type type)
         {
-            return null;
+            return Activator.CreateInstance(type);
         }
 
         public T CreateInstance<T>()
