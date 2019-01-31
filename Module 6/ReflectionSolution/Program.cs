@@ -49,7 +49,7 @@ namespace ReflectionSolution
             // Not just that assembly will be used for creating types
             //container.AddAssemlby(Assembly.GetExecutingAssembly());
 
-            //_container.AddType(typeof(ReflectionSolution.DAL.Models.Customer), typeof(ReflectionSolution.DAL.Models.ICustomer));
+            _container.AddType(typeof(ReflectionSolution.DAL.Models.Customer), typeof(ReflectionSolution.DAL.Models.ICustomer));
             _container.AddType(typeof(ReflectionSolution.BLL.Models.CustomerCtor));
             _container.AddType(typeof(ReflectionSolution.DAL.Services.Logger));
         }

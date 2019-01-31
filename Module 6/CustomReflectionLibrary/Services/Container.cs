@@ -36,7 +36,9 @@ namespace CustomReflectionLibrary.Services
         {
             // TODO: change dictionary "Value" type - instead of Type use some custom 
             // entity for storing not just passing type, but also it's base type
-            throw new NotImplementedException();
+
+            if (!addedTypes.ContainsKey(baseType.FullName))
+                addedTypes.Add(baseType.FullName, type);
         }
 
         public object CreateInstance(Type type)
@@ -46,6 +48,33 @@ namespace CustomReflectionLibrary.Services
 
             if (type.CustomAttributes.Any())
             {
+                if (type.CustomAttributes
+                    .Any(_ => _.AttributeType == typeof(Attributes.ImportConstructorAttribute)))
+                {
+                    var constcructors = type.GetConstructors();
+                    foreach (var constructor in constcructors)
+                    {
+                        var constructorParameters = constructor.GetParameters();
+
+                        var parametersForInitialization = new List<object>();
+
+                        foreach (var constructorParameter in constructorParameters)
+                        {
+                            if (!addedTypes.ContainsKey(constructorParameter.ParameterType.FullName))
+                                throw new Exception($"{constructorParameter.ParameterType.FullName} is not added to container " +
+                                    $"which is required to create instance of {type.FullName} through a constructor");
+
+                            parametersForInitialization.Add(addedTypes[constructorParameter.ParameterType.FullName]);
+                        }
+
+                        return Activator.CreateInstance(type,
+                            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
+                            null,
+                            parametersForInitialization.ToArray(),
+                            null);
+                    }
+                }
+
                 foreach (var customAttribute in type.CustomAttributes)
                 {
                     if (!addedTypes.ContainsKey(customAttribute.AttributeType.FullName))
