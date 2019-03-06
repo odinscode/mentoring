@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2046
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileSystemVisitorApp", "FileSystemVisitorApp.csproj", "{B660DC2F-0984-475A-A6FA-113F98B16A69}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileSystemVisitorAppTests", "FileSystemVisitorAppTests\FileSystemVisitorAppTests.csproj", "{7B73B556-6A02-47E2-B315-D83332916E15}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B660DC2F-0984-475A-A6FA-113F98B16A69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B660DC2F-0984-475A-A6FA-113F98B16A69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B660DC2F-0984-475A-A6FA-113F98B16A69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B660DC2F-0984-475A-A6FA-113F98B16A69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B73B556-6A02-47E2-B315-D83332916E15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B73B556-6A02-47E2-B315-D83332916E15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B73B556-6A02-47E2-B315-D83332916E15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B73B556-6A02-47E2-B315-D83332916E15}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {02AE5AAA-55CF-4113-AE63-F93DCA9AD445}
+	EndGlobalSection
+EndGlobal
